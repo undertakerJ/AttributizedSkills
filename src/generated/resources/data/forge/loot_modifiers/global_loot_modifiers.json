@@ -1,0 +1,12 @@
+{
+  "entries": [
+    "attributizedskills:larval_tear_chests/stronghold_library",
+    "attributizedskills:larval_tear_chests/simple_dungeon",
+    "attributizedskills:larval_tear_chests/jungle_temple",
+    "attributizedskills:larval_tear_chests/desert_pyramid",
+    "attributizedskills:larval_tear_chests/woodland_mansion",
+    "attributizedskills:larval_tear_chests/ancient_city",
+    "attributizedskills:larval_tear_chests/buried_treasure"
+  ],
+  "replace": false
+}
