@@ -217,7 +217,7 @@ public class EventHandler {
   @SubscribeEvent
   public void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
     if (event.getObject() instanceof Player) {
-      event.addCapability(SkillCapability.KEY, new SkillProvider(new SkillModel()));
+      event.addCapability(new ResourceLocation("rpgskillable","cap_skills"), new SkillProvider(new SkillModel()));
     }
   }
 

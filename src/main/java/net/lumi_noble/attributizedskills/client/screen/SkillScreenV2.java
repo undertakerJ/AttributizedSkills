@@ -166,35 +166,37 @@ public class SkillScreenV2 extends Screen {
                             totalValue = instance.getValue();
                         }
                     }
+          if (skillLevel > 1) {
+            double bonusValue;
+            switch (bonusData.operation) {
+              case ADDITION:
+                bonusValue = skillLevel * bonusData.multiplier;
+                break;
+              case MULTIPLY_BASE:
+                bonusValue = baseValue * (skillLevel * bonusData.multiplier);
+                break;
+              case MULTIPLY_TOTAL:
+                bonusValue = totalValue * (skillLevel * bonusData.multiplier);
+                break;
+              default:
+                bonusValue = (skillLevel - 1) * bonusData.multiplier;
+                break;
+            }
 
-                    double bonusValue;
-                    switch (bonusData.operation) {
-                        case ADDITION:
-                            bonusValue = (skillLevel - 1) * bonusData.multiplier;
-                            break;
-                        case MULTIPLY_BASE:
-                            bonusValue = baseValue * ((skillLevel - 1) * bonusData.multiplier);
-                            break;
-                        case MULTIPLY_TOTAL:
-                            bonusValue = totalValue * ((skillLevel - 1) * bonusData.multiplier);
-                            break;
-                        default:
-                            bonusValue = (skillLevel - 1) * bonusData.multiplier;
-                            break;
-                    }
+            if (Math.abs(bonusValue) < 1e-6) continue;
 
-                    if (Math.abs(bonusValue) < 1e-6) continue;
+            String attrName =
+                I18n.exists(attribute.getDescriptionId())
+                    ? I18n.get(attribute.getDescriptionId())
+                    : attrId;
 
-                    String attrName = I18n.exists(attribute.getDescriptionId())
-                            ? I18n.get(attribute.getDescriptionId())
-                            : attrId;
-
-                    String bonusLine = index + ". " + String.format("%.2f", bonusValue)
-                            + " bonus " + attrName;
-                    allLines.add(Component.literal(bonusLine));
-                    index++;
-                }
-            } else {
+            String bonusLine =
+                index + ". " + String.format("%.2f", bonusValue) + " bonus " + attrName;
+            allLines.add(Component.literal(bonusLine));
+            index++;
+          }
+        }
+      } else {
                 allLines.add(Component.literal("No bonuses"));
             }
             allLines.add(Component.literal(""));
@@ -257,37 +259,39 @@ public class SkillScreenV2 extends Screen {
 
                     // Получаем базовое значение атрибута (если доступно)
                     double baseValue = 0;
+                    double totalValue = 0;
                     if (Minecraft.getInstance().player != null) {
                         AttributeInstance instance = Minecraft.getInstance().player.getAttribute(attribute);
                         if (instance != null) {
                             baseValue = instance.getBaseValue();
+                            totalValue = instance.getValue();
                         }
                     }
 
-                    // Рассчитываем бонус в зависимости от операции
-                    double bonusValue;
-                    switch (bonusData.operation) {
-                        case ADDITION:
-                            bonusValue = (skillLevel - 1) * bonusData.multiplier;
-                            break;
-                        case MULTIPLY_BASE:
-                            bonusValue = baseValue * bonusData.multiplier;
-                            break;
-                        case MULTIPLY_TOTAL:
-                            bonusValue = (baseValue + (skillLevel - 1)) * bonusData.multiplier;
-                            break;
-                        default:
-                            bonusValue = (skillLevel - 1) * bonusData.multiplier;
-                            break;
-                    }
+            double bonusValue;
+            switch (bonusData.operation) {
+              case ADDITION:
+                bonusValue = skillLevel * bonusData.multiplier;
+                break;
+              case MULTIPLY_BASE:
+                bonusValue = baseValue * (skillLevel * bonusData.multiplier);
+                break;
+              case MULTIPLY_TOTAL:
+                bonusValue = totalValue * (skillLevel * bonusData.multiplier);
+                break;
+              default:
+                bonusValue = skillLevel * bonusData.multiplier;
+                break;
+            }
 
-                    if (Math.abs(bonusValue) < 1e-6) continue;
+            if (Math.abs(bonusValue) < 1e-6) continue;
 
-                    String bonusLine = index + ". " + String.format("%.2f", bonusValue) + attrId;
-                    List<MutableComponent> splitLines = split(Component.literal(bonusLine), font, 74);
-                    flattenedLines.addAll(splitLines);
-                    index++;
-                }
+            String bonusLine = index + ". " + String.format("%.2f", bonusValue) + attrId;
+            List<MutableComponent> splitLines = split(Component.literal(bonusLine), font, 74);
+            flattenedLines.addAll(splitLines);
+            index++;
+
+        }
             } else {
                 flattenedLines.add(Component.literal("No bonuses"));
             }

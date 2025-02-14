@@ -53,7 +53,7 @@ public class AttributizedSkillsLang extends LanguageProvider  {
 		add("container.skills", "Skills");
 		add("tooltip.requirements", "Requirements");
 		add("key.attributizedskills.open_skill_screen", "Open Skills");
-		add("key.category.attributizedskills.general", "AttributizedSkills");
+		add("key.category.attributizedskills.general", "Attributized Skills");
 		add("overlay.main_hand_message", "Your right arm struggles to wield the item");
 		add("overlay.off_hand_message", "Your left arm struggles to wield the item");
 		add("overlay.default_message", "You lack the skills to use this!");
@@ -68,8 +68,8 @@ public class AttributizedSkillsLang extends LanguageProvider  {
 		add("skill.intelligence", "Intelligence");
 		
 		// JEED
-		add("effect.attributizedskills.atrophy.description", "Severly reduces attack speed, damage, and spell damage.");
-		add("effect.attributizedskills.encumbered.description", "Severly reduces movespeed and prevents jumping. Drains feathers.");
+		add("effect.attributizedskills.atrophy.description", "Severely reduces attack speed, damage, and spell damage.");
+		add("effect.attributizedskills.encumbered.description", "Severely reduces movespeed and prevents jumping. Drains feathers.");
 	}
 
 }
