@@ -230,19 +230,6 @@ public class EventHandler {
   }
 
   @SubscribeEvent
-  public static void onPlayerClone(PlayerEvent.Clone event) {
-    if (event.isWasDeath()) {
-      event.getOriginal().reviveCaps();
-      event.getEntity().getCapability(SkillCapability.SKILL_MODEL).ifPresent(newStore -> {
-        event.getOriginal().getCapability(SkillCapability.SKILL_MODEL).ifPresent(oldStore -> {
-          newStore.copyForRespawn(oldStore);
-        });
-      });
-      event.getOriginal().invalidateCaps();
-    }
-  }
-
-  @SubscribeEvent
   public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
     Player player = event.getEntity();
     if (player instanceof ServerPlayer serverPlayer) {

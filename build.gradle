@@ -113,7 +113,11 @@ repositories {
             includeGroup "curse.maven"
         }
     }
-
+    //Iron's Spells
+    maven {
+        name = "Iron's Maven - Release"
+        url = "https://code.redspace.io/releases"
+    }
     mavenCentral()
     mavenLocal()
 }
@@ -121,15 +125,18 @@ repositories {
 dependencies {
 
     minecraft "net.minecraftforge:forge:1.19.2-${forge_version}"
-    compileOnly fg.deobf("curse.maven:feathers-699933:${feathers_version}")
-    implementation fg.deobf("com.hollingsworth.ars_nouveau:ars_nouveau-${minecraft_version}:${arsnouveau_version}")
+    implementation fg.deobf("curse.maven:feathers-699933:${feathers_version}")
     implementation fg.deobf("top.theillusivec4.curios:curios-forge:1.19.2-${curios_version}")
-    implementation fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}")
 
     implementation fg.deobf("curse.maven:max-health-fix-492246:4658481")
     implementation fg.deobf("curse.maven:attributefix-280510:5126457")
     implementation fg.deobf("curse.maven:item-production-lib-950401:5114035")
     implementation fg.deobf("curse.maven:passive-skill-tree-850298:5729406")
+
+    implementation fg.deobf("io.redspace.ironsspellbooks:irons_spellbooks:${irons_spells_version}")
+    implementation fg.deobf("curse.maven:caelus-308989:3929284")
+    implementation fg.deobf("curse.maven:playeranimator-658587:4418149")
+    implementation fg.deobf("curse.maven:geckolib-388172:4407241")
 
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }
@@ -138,11 +145,11 @@ jar {
     manifest {
         attributes([
                 "Specification-Title"     : "${project.modName}",
-                "Specification-Vendor"    : "dragoni7",
+                "Specification-Vendor"    : "undertaker_j",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : "${project.modName}",
                 "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "dragoni7",
+                "Implementation-Vendor"   : "undertaker_j",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

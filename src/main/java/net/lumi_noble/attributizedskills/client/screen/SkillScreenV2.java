@@ -104,7 +104,7 @@ public class SkillScreenV2 extends Screen {
         super.renderBackground(poseStack);
         GuiComponent.blit(
                 poseStack, x, y, 0, textureY, skillWidth, skillHeight, textureWidth, textureHeight);
-        font.draw(poseStack, levelText, (x + textureOriginOffset) + (textureWidth/2 - textureOriginOffset), y + 6, 0x969696);
+        font.draw(poseStack, levelText, (x + textureOriginOffset + 3) , y + 6, 0x969696);
         poseStack.popPose();
         font.draw(poseStack,
                 Component.translatable("ui.skills.limit", Config.getMaxLevelTotal()).getString(),
@@ -113,6 +113,8 @@ public class SkillScreenV2 extends Screen {
         font.draw(poseStack,
                 Component.translatable("ui.skills.hold_shift").getString(),
                 x, y - 20, 0x313131);
+
+        SkillButtonV2.drawOutlinedText(poseStack, "Tears: " + model.getTearPoints(), x + 250 - font.width("Tears: " + model.getTearPoints()), y + 6, 0x21F8F6);
     }
 
     @Override

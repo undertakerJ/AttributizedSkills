@@ -43,6 +43,7 @@ public class SkillButtonV2 extends AbstractButton {
         SkillModel model = SkillModel.get();
         int level = model.getSkillLevel(skill);
         int maxLevel = Config.getMaxLevel();
+        int tearPoints = model.getTearPoints();
 
         if (!model.underMaxTotal()) {
             underMaxTotal = false;
@@ -88,16 +89,25 @@ public class SkillButtonV2 extends AbstractButton {
         int centeredLevelX = x + (width / 2) - (levelTextWidth / 2);
         if (this.isMouseOver(mouseX, mouseY) && level < maxLevel && !Config.DISABLE_LEVEL_BUY.get()) {
             int numLevels = Screen.hasShiftDown() ? 5 : 1;
-            int totalCost = 0;
-            for (int i = 0; i < numLevels && (level + i) < maxLevel; i++) {
-                totalCost += Config.getStartCost() + ((level + i) - 1) * Config.getCostIncrease();
+
+            if (tearPoints >= numLevels) {
+                String costText = numLevels == 1 ? "1 Tear" : numLevels + " Tears";
+                int costColor = 0x21F8F6;
+                int costTextWidth = minecraft.font.width(costText);
+                int centeredCostX = x + (width / 2) - (costTextWidth / 2);
+                drawOutlinedText(stack, costText, centeredCostX + 8, y + 18, costColor);
+            } else {
+                int totalCost = 0;
+                for (int i = 0; i < numLevels && (level + i) < maxLevel; i++) {
+                    totalCost += Config.getStartCost() + ((level + i) - 1) * Config.getCostIncrease();
+                }
+                int costColor = (minecraft.player.experienceLevel >= totalCost && model.underMaxTotal()) ? 0x7EFC20 : 0xFC5454;
+                String costText = totalCost + " levels";
+                int costTextWidth = minecraft.font.width(costText);
+                int centeredCostX = x + (width / 2) - (costTextWidth / 2);
+                drawOutlinedText(stack, costText, centeredCostX + 8, y + 18, costColor);
             }
-            int costColor = (minecraft.player.experienceLevel >= totalCost && model.underMaxTotal()) ? 0x7EFC20 : 0xFC5454;
-            String costText = totalCost + " levels";
-            int costTextWidth = minecraft.font.width(costText);
-            int centeredCostX = x + (width / 2) - (costTextWidth / 2);
-            drawOutlinedText(stack, costText, centeredCostX + 8, y + 18, costColor);
-        } else {
+        }  else {
             drawOutlinedText(stack, levelText, centeredLevelX + 8, y + 18, 0xBEBEBE);
         }
     }
@@ -148,15 +158,16 @@ public class SkillButtonV2 extends AbstractButton {
 
     @Override
     public void onPress() {
-        if (underMaxTotal && !Config.DISABLE_LEVEL_BUY.get())
-        {
-            if (Screen.hasShiftDown()) {
-                ModNetworking.sendToServer(new RequestLevelUpPacket(skill, 5));
-            } else {
-                ModNetworking.sendToServer(new RequestLevelUpPacket(skill, 1));
-            }
+        if (underMaxTotal && !Config.DISABLE_LEVEL_BUY.get()) {
+            SkillModel model = SkillModel.get();
+            int maxPointsToUse = Screen.hasShiftDown() ? 5 : 1;
+            int tearPoints = model.getTearPoints();
+
+            boolean useTearPoints = (tearPoints >= maxPointsToUse);
+            ModNetworking.sendToServer(new RequestLevelUpPacket(skill, maxPointsToUse, useTearPoints));
         }
     }
+
 
     public static void drawOutlinedText(PoseStack poseStack, String text, int x, int y, int color) {
         Font font = Minecraft.getInstance().font;

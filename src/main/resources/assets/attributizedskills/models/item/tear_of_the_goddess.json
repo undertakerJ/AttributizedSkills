@@ -1,6 +1,6 @@
 {
     "parent": "minecraft:item/generated",
     "textures": {
-      "layer0": "attributizedskills:item/larval_tear"
+      "layer0": "attributizedskills:item/tear_of_the_goddess"
     }
   }

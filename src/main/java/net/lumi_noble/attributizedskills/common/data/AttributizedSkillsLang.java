@@ -17,10 +17,12 @@ public class AttributizedSkillsLang extends LanguageProvider  {
 
 		// item
 		add(AttributizedSkills.LARVAL_TEAR.get(), "Larval Tear");
+		add(AttributizedSkills.TEAR_OF_THE_GODDESS.get(), "Tear of the Goddess");
 		add("attributizedskills.tooltip.larval_tear_reset", "Resets all skills on use. Returns xp levels equal to the total amount of levels one had");
 		add("attributizedskills.tooltip.larval_tear_loot", "Converts to 12 bottles of experience on use.");
 		add("attributizedskills.tooltip.larval_tear_off", "Just a worthless rock... How pity...");
 		add("larvar_tear.reset_successful", "Your skills began to fade away... Skill issue, dear...");
+		add("tear_of_the_goddess.add", "You gain 1 Tear Point.");
 
 		// effects
 		add(AttributizedSkillsEffects.ATROPHY.get(), "Atrophy");
@@ -39,7 +41,7 @@ public class AttributizedSkillsLang extends LanguageProvider  {
 		add("command.add_bonus.failure.exist", "Bonus for attribute %1$s already exists for %2$s");
     	add("command.add_bonus.success", "Added bonus for %1$s: %2$s");
 		add("command.error.remove_all_bonuses", "If you see this message, then dev of mod have a severe case of skill issue, and was unable to remove bonuses on live players.");
-
+		add("command.set_tear_point.success", "Set %1$s free tear points to %2$s");
 		// Attributes
 		add("attribute.attributizedskills.vitality", "Vitality");
 		add("attribute.attributizedskills.dexterity", "Dexterity");

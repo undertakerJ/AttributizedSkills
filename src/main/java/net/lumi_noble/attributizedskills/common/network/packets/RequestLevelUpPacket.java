@@ -19,43 +19,62 @@ public class RequestLevelUpPacket {
 
 	private final int skill;
 	private final int levels;
+	private final boolean useTearPoints;
 
-	public RequestLevelUpPacket(Skill skill, int levels) {
+	public RequestLevelUpPacket(Skill skill, int levels, boolean useTearPoints) {
 		this.skill = skill.index;
 		this.levels = levels;
+		this.useTearPoints = useTearPoints;
+
 	}
 
 	public RequestLevelUpPacket(FriendlyByteBuf buf) {
 		this.skill = buf.readInt();
 		this.levels = buf.readInt();
+		this.useTearPoints = buf.readBoolean();
 	}
 
 	public void encode(FriendlyByteBuf buf) {
 		buf.writeInt(skill);
 		buf.writeInt(levels);
+		buf.writeBoolean(useTearPoints);
 	}
 
 	public void handle(Supplier<NetworkEvent.Context> context) {
 		context.get().enqueueWork(() -> {
 			ServerPlayer player = context.get().getSender();
+			if (player == null) return; // Проверка на null
+
 			SkillModel skillModel = SkillModel.get(player);
 			Skill skill = Skill.values()[this.skill];
 			int currentLevel = skillModel.getSkillLevel(skill);
 			int maxLevel = Config.getMaxLevel();
 			int totalCost = 0;
 
+			// Подсчёт общей стоимости уровней
 			for (int i = 0; i < levels && (currentLevel + i) < maxLevel; i++) {
 				totalCost += Config.getStartCost() + ((currentLevel + i) - 1) * Config.getCostIncrease();
 			}
 
-			if (currentLevel < maxLevel && skillModel.underMaxTotal() && (player.isCreative() || player.experienceLevel >= totalCost)) {
-				if (!player.isCreative()) {
+			// Получаем количество Tear Points
+			int tearPoints = skillModel.getTearPoints();
+
+			// Проверка, хватает ли ресурсов
+			boolean canUseTearPoints = useTearPoints && tearPoints >= levels;
+
+			if (currentLevel < maxLevel && skillModel.underMaxTotal()) {
+				if (canUseTearPoints) {
+					skillModel.setTearPoints(tearPoints - levels);
+				} else if (!player.isCreative()) {
 					player.giveExperienceLevels(-totalCost);
 				}
+
+				// ✅ Повышаем уровень без наслаивания
 				for (int i = 0; i < levels && skillModel.getSkillLevel(skill) < maxLevel; i++) {
-					skillModel.increaseSkillLevel(skill, player);
+					skillModel.setSkillLevel(skill, skillModel.getSkillLevel(skill) + 1, player);
 				}
 
+				// ✅ Обновляем атрибуты и синхронизируем данные
 				updatePlayerAttribute(player, skill, skillModel.getSkillLevel(skill));
 				skillModel.updateTotalLevel();
 				SyncToClientPacket.send(player);
@@ -64,6 +83,7 @@ public class RequestLevelUpPacket {
 
 		context.get().setPacketHandled(true);
 	}
+
 	private void updatePlayerAttribute(ServerPlayer player, Skill skill, int level) {
 		Attribute attribute = getAttributeForSkill(skill);
 		if (attribute == null) return;

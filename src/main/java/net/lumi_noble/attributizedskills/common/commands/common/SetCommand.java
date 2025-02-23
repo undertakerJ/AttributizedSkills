@@ -66,7 +66,7 @@ public class SetCommand {
     if (attribute != null) {
       AttributeInstance attributeInstance = player.getAttribute(attribute);
       if (attributeInstance != null) {
-        UUID modifierUUID = getModifierUUIDForSkill(skill);
+        UUID modifierUUID = ModAttributes.getModifierUUIDForSkill(skill);
         attributeInstance.removeModifier(modifierUUID);
 
         double bonus = level - 1;
@@ -76,7 +76,7 @@ public class SetCommand {
       }
     }
   }
-  private static Attribute getAttributeForSkill(Skill skill) {
+  public static Attribute getAttributeForSkill(Skill skill) {
     return switch (skill) {
       case VITALITY -> ModAttributes.VITALITY.get();
       case STRENGTH -> ModAttributes.STRENGTH.get();
@@ -85,17 +85,6 @@ public class SetCommand {
       case ENDURANCE -> ModAttributes.ENDURANCE.get();
       case INTELLIGENCE -> ModAttributes.INTELLIGENCE.get();
       default -> null;
-    };
-  }
-  private static UUID getModifierUUIDForSkill(Skill skill) {
-    return switch (skill) {
-      case VITALITY -> UUID.fromString("e9810faf-3386-482a-af96-0f8b8b28de04");
-      case STRENGTH -> UUID.fromString("b2deb2fe-d35f-42e9-b5fe-c0509ddbe7f9");
-      case MIND -> UUID.fromString("f0af87e8-f034-4826-8557-4225f4ef3885");
-      case DEXTERITY -> UUID.fromString("77c42b06-b4d3-4e2b-8bf2-e32d8efeee6e");
-      case ENDURANCE -> UUID.fromString("ec8e0daf-0229-49bd-ab8d-3c0f578c3e50");
-      case INTELLIGENCE -> UUID.fromString("5c783fc7-2705-450d-b1c1-2e49c8527871");
-      default -> UUID.randomUUID();
     };
   }
 }

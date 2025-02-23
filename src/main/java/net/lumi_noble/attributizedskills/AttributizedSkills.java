@@ -5,11 +5,11 @@ import net.lumi_noble.attributizedskills.client.Tooltip;
 import net.lumi_noble.attributizedskills.client.screen.InventoryTabs;
 import net.lumi_noble.attributizedskills.common.CuriosCompat;
 import net.lumi_noble.attributizedskills.common.EventHandler;
-import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
 import net.lumi_noble.attributizedskills.common.item.LarvalTearItem;
 import net.lumi_noble.attributizedskills.common.attributes.ModAttributes;
 import net.lumi_noble.attributizedskills.common.commands.Commands;
 import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.item.TearOfTheGoddessItem;
 import net.lumi_noble.attributizedskills.common.loot.ModLootModifiers;
 import net.lumi_noble.attributizedskills.common.effects.AttributizedSkillsEffects;
 import net.lumi_noble.attributizedskills.common.network.ModNetworking;
@@ -17,7 +17,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -40,6 +39,7 @@ public class AttributizedSkills
     public static final RegistryObject<Item> LARVAL_TEAR = ITEMS.register("larval_tear", () -> new LarvalTearItem(
             new Item.Properties().stacksTo(16)
                     .rarity(Rarity.RARE).tab(CreativeModeTab.TAB_MISC)));
+    public static final RegistryObject<Item> TEAR_OF_THE_GODDESS = ITEMS.register("tear_of_the_goddess", TearOfTheGoddessItem::new);
     
     public AttributizedSkills()
     {

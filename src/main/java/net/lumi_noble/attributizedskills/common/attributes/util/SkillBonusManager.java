@@ -18,9 +18,9 @@ public class SkillBonusManager {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || event.player.level.isClientSide()) return;
-
         ServerPlayer player = (ServerPlayer) event.player;
-        if (player.tickCount % 100 == 0) {
+        if(player.isDeadOrDying()) return;
+        if (player.tickCount % 50 == 0) {
             SkillModel model = SkillModel.get(player);
             for (Skill skill : Skill.values()) {
                 Map<String, AttributeBonus> bonusMap = getBonusMapForSkill(skill);

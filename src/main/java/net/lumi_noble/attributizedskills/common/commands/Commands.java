@@ -20,6 +20,7 @@ public class Commands {
                 .then(AddRequirementsCommand.register())
                 .then(RemoveRequirementsCommand.register())
                 .then(AddSkillBonusCommand.register())
-                    .then(RemoveSkillBonusCommand.register()));
+                    .then(RemoveSkillBonusCommand.register())
+                    .then(SetTearPointsCommand.register()));
   }
 }

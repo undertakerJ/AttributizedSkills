@@ -35,6 +35,9 @@ import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import static net.lumi_noble.attributizedskills.common.attributes.ModAttributes.getModifierUUIDForSkill;
+import static net.lumi_noble.attributizedskills.common.commands.common.SetCommand.getAttributeForSkill;
+
 @AutoRegisterCapability
 public class SkillModel implements INBTSerializable<CompoundTag> {
 	
@@ -45,10 +48,9 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 	public static final int EFFECT_DURATION = Integer.MAX_VALUE;
 
 	private int[] skillLevels = new int[] { 1, 1, 1, 1, 1, 1 };
-	
 	private int totalLevel = 6;
 
-	private int updateTick = 0;
+	private int tearPoints = 0;
 
 	public int getSkillLevel(Skill skill) {
 		return skillLevels[skill.index];
@@ -57,7 +59,9 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 	public int getTotalLevel() {
 		return totalLevel;
 	}
-	
+
+	public int getTearPoints() {return tearPoints;}
+
 	public boolean underMaxTotal() {
 		return totalLevel < Config.getMaxLevelTotal();
 	}
@@ -89,6 +93,12 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 		ModAttributes.resetPlayerAttributes(player);
 	}
 
+	public void setTearPoints(int points) {
+		this.tearPoints = Math.max(0, points);
+	}
+	public void addTearPoints(int tearPoints){
+		this.tearPoints += Math.max(0, tearPoints);
+	}
 
 	public boolean canUseItem(Player player, ItemStack item) {
 		return canUse(player, ForgeRegistries.ITEMS.getKey(item.getItem()));
@@ -105,13 +115,11 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 	public boolean canUseItemInSlot(Player player, ItemStack itemStack, EquipmentSlot slot) {
 		
 		ResourceLocation itemLoc = ForgeRegistries.ITEMS.getKey(itemStack.getItem());
-		
-		// check if blacklisted
+
 		if (isBlacklisted(itemLoc)) {
 			return true;
 		}
-		
-		// check override skill locks
+
 		Requirement[] requirements = Config.getItemRequirements(itemLoc);
 
 		if (requirements != null) {
@@ -127,7 +135,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 				}
 			}
 		}
-		// check attribute skill locks if not overriden
+
 		else if (Config.getIfUseAttributeLocks()) {
 
 			Multimap<Attribute, AttributeModifier> attributeModifiers = itemStack.getAttributeModifiers(slot);
@@ -163,8 +171,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 				}
 			}
 		}
-		
-		// check for enchantment attribute locks
+
 		if (itemStack.isEnchanted()) {
 			Map<Enchantment, Integer> enchants = EnchantmentHelper.getEnchantments(itemStack);
 			Map<Requirement[], Integer> enchantRequirements = new HashMap<>();
@@ -182,8 +189,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 						enchantRequirements.put(Config.getEnchantmentRequirements(ForgeRegistries.ENCHANTMENTS.getKey(enchant)), oldValue);
 					}
 				}
-				
-				// if the item contains enchants with requirements
+
 				if (!enchantRequirements.isEmpty() && enchantRequirements != null) {
 					for (Requirement[] requirementsPerEnchant : enchantRequirements.keySet()) {
 						if (requirementsPerEnchant != null) {
@@ -274,10 +280,31 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 				.orElseThrow(() -> new IllegalArgumentException("Player does not have a Skill Model"));
 	}
 
+	public void copyForRespawns(SkillModel oldSkill, ServerPlayer oldPlayer) {
+		this.deserializeNBT(oldSkill.serializeNBT()); // Копируем все данные
+
+		for (Skill skill : Skill.values()) {
+			UUID modifierUUID = getModifierUUIDForSkill(skill);
+			Attribute attribute = getAttributeForSkill(skill);
+
+			if (attribute != null) {
+				AttributeInstance instance = oldPlayer.getAttribute(attribute);
+
+				if (instance == null || instance.getModifier(modifierUUID) == null) {
+					this.setSkillLevel(skill, 1, null);
+
+				}
+			}
+		}
+
+		this.updateTotalLevel(); // Пересчитываем общий уровень
+	}
+
+
 	public void copyForRespawn(SkillModel oldStore) {
 		this.deserializeNBT(oldStore.serializeNBT());
 	}
-	
+
 	public static boolean isBlacklisted(ResourceLocation loc) {
 		return Config.getBlacklist().contains(loc.toString());
 	}
@@ -292,6 +319,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 		tag.putInt("endurance", skillLevels[4]);
 		tag.putInt("intelligence", skillLevels[5]);
 		tag.putInt("totalLevel", totalLevel);
+		tag.putInt("tearPoints", tearPoints);
 		return tag;
 	}
 
@@ -304,6 +332,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 		skillLevels[4] = nbt.getInt("endurance");
 		skillLevels[5] = nbt.getInt("intelligence");
 		totalLevel = nbt.getInt("totalLevel");
+		tearPoints = nbt.getInt("tearPoints");
 	}
 
 }
