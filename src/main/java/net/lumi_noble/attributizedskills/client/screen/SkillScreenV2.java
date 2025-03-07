@@ -7,7 +7,7 @@ import net.lumi_noble.attributizedskills.client.screen.button.ExtraActionButton;
 import net.lumi_noble.attributizedskills.client.screen.button.SkillButtonV2;
 import net.lumi_noble.attributizedskills.common.attributes.util.AttributeBonus;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -22,13 +22,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.openjdk.nashorn.internal.ir.annotations.Ignore;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -107,7 +103,7 @@ public class SkillScreenV2 extends Screen {
         font.draw(poseStack, levelText, (x + textureOriginOffset + 3) , y + 6, 0x969696);
         poseStack.popPose();
         font.draw(poseStack,
-                Component.translatable("ui.skills.limit", Config.getMaxLevelTotal()).getString(),
+                Component.translatable("ui.skills.limit", ASConfig.getMaxLevelTotal()).getString(),
                 x, y - 10, 0x313131);
 
         font.draw(poseStack,
@@ -323,20 +319,20 @@ public class SkillScreenV2 extends Screen {
     }
 
     private Map<String, AttributeBonus> getBonusMapForSkill(Skill skill) {
-        Config.load();
+        ASConfig.load();
         switch (skill) {
             case VITALITY:
-                return Config.vitalityAttributeMultipliers;
+                return ASConfig.vitalityAttributeMultipliers;
             case STRENGTH:
-                return Config.strengthAttributeMultipliers;
+                return ASConfig.strengthAttributeMultipliers;
             case MIND:
-                return Config.mindAttributeMultipliers;
+                return ASConfig.mindAttributeMultipliers;
             case DEXTERITY:
-                return Config.dexterityAttributeMultipliers;
+                return ASConfig.dexterityAttributeMultipliers;
             case ENDURANCE:
-                return Config.enduranceAttributeMultipliers;
+                return ASConfig.enduranceAttributeMultipliers;
             case INTELLIGENCE:
-                return Config.intelligenceAttributeMultipliers;
+                return ASConfig.intelligenceAttributeMultipliers;
             default:
                 return null;
         }

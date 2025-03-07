@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.lumi_noble.attributizedskills.common.attributes.util.AttributeBonus;
+import net.lumi_noble.attributizedskills.common.compat.SpellRequirement;
 import net.lumi_noble.attributizedskills.common.item.TearAction;
 import net.lumi_noble.attributizedskills.common.skill.Requirement;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
@@ -15,9 +16,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraftforge.common.ForgeConfigSpec;
 
-public class Config {
+public class ASConfig {
 
-  public static final ForgeConfigSpec CONFIG_SPEC;
+  public static final ForgeConfigSpec SERVER_CONFIG_SPEC;
   private static final ForgeConfigSpec CLIENT_CONFIG_SPEC;
   public static final ForgeConfigSpec.BooleanValue DISABLE_LEVEL_BUY;
   private static final ForgeConfigSpec.BooleanValue DEATH_RESET;
@@ -44,6 +45,9 @@ public class Config {
   private static final ForgeConfigSpec.ConfigValue<List<? extends Integer>> INV_TAB_OFFSET;
   private static final ForgeConfigSpec.ConfigValue<List<? extends Integer>> SKILL_TAB_OFFSET;
   private static final ForgeConfigSpec.BooleanValue CREATIVE_HIDDEN;
+
+  public static final ForgeConfigSpec.ConfigValue<List<? extends String>> SPELL_REQUIREMENTS;
+  public static final Map<ResourceLocation, SpellRequirement> SPELL_REQUIREMENTS_MAP = new HashMap<>();
 
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>>
       VITALITY_SKILL_ATTRIBUTE_BONUSES;
@@ -92,6 +96,10 @@ public class Config {
 
   static {
     ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+
+    builder.comment("Iron's Spells spell requirements.");
+    SPELL_REQUIREMENTS = builder.defineList("spell_requirements", List.of(
+    ), obj -> true);
 
     builder.comment("Reset all skills to 1 when a player dies.");
     DEATH_RESET = builder.define("deathReset", false);
@@ -409,7 +417,7 @@ public class Config {
         "Format: mod_id:item");
     IGNORED = builder.defineList("ignored", Arrays.asList("minecraft:wooden_axe"), obj -> true);
 
-    CONFIG_SPEC = builder.build();
+    SERVER_CONFIG_SPEC = builder.build();
 
     builder = new ForgeConfigSpec.Builder();
 
@@ -425,7 +433,7 @@ public class Config {
 
   public static void load() {
 
-    deathReset = DEATH_RESET.get();
+    deathReset = DEATH_RESET. get();
     effectDetriment = EFFECT_DETRIMENT.get();
     useAttributeLocks = USE_ATTRIBUTE_LOCKS.get();
     startingCost = STARTING_COST.get();
@@ -593,6 +601,38 @@ public class Config {
     creativeHidden = CREATIVE_HIDDEN.get();
   }
 
+  public static void loadSpellRequirements() {
+    SPELL_REQUIREMENTS_MAP.clear();
+    for (String entry : SPELL_REQUIREMENTS.get()) {
+      String[] tokens = entry.split("\\s+");
+      if (tokens.length < 2) continue;
+
+      ResourceLocation spellId = new ResourceLocation(tokens[0]);
+      Map<Skill, Integer> reqs = new HashMap<>();
+      int perLevelIncrement = 0;
+
+      for (int i = 1; i < tokens.length; i++) {
+        String[] parts = tokens[i].split(":");
+        if (parts.length != 2) continue;
+        String key = parts[0].toLowerCase();
+        int value = Integer.parseInt(parts[1]);
+        if (key.equals("perlevel")) {
+          perLevelIncrement = value;
+        } else {
+          try {
+            Skill skill = Skill.valueOf(key.toUpperCase());
+            reqs.put(skill, value);
+          } catch (IllegalArgumentException e) {
+            System.err.println("Unknown skill in spell requirements: " + key);
+          }
+        }
+      }
+      SPELL_REQUIREMENTS_MAP.put(spellId, new SpellRequirement(reqs, perLevelIncrement));
+    }
+  }
+
+
+
   public static boolean getDeathReset() {
     return deathReset;
   }
@@ -677,7 +717,7 @@ public class Config {
   }
 
   public static ForgeConfigSpec getConfig() {
-    return CONFIG_SPEC;
+    return SERVER_CONFIG_SPEC;
   }
 
   public static int getInvXOffset() {

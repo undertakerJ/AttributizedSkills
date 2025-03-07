@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -73,7 +73,7 @@ public class SkillBonusHelper {
   }
 
   public static void applyStrengthBonus(ServerPlayer player, int strengthLevel) {
-    for (Map.Entry<String, AttributeBonus> entry : Config.strengthAttributeMultipliers.entrySet()) {
+    for (Map.Entry<String, AttributeBonus> entry : ASConfig.strengthAttributeMultipliers.entrySet()) {
       String attrId = entry.getKey();
       AttributeBonus bonusEntry = entry.getValue();
       double multiplier = bonusEntry.multiplier;
@@ -106,7 +106,7 @@ public class SkillBonusHelper {
 
   public static void applyDexterityBonus(ServerPlayer player, int dexterityLevel) {
     for (Map.Entry<String, AttributeBonus> entry :
-        Config.dexterityAttributeMultipliers.entrySet()) {
+        ASConfig.dexterityAttributeMultipliers.entrySet()) {
       String attrId = entry.getKey();
       AttributeBonus bonusEntry = entry.getValue();
       double multiplier = bonusEntry.multiplier;
@@ -141,7 +141,7 @@ public class SkillBonusHelper {
 
   public static void applyEnduranceBonus(ServerPlayer player, int enduranceLevel) {
     for (Map.Entry<String, AttributeBonus> entry :
-        Config.enduranceAttributeMultipliers.entrySet()) {
+        ASConfig.enduranceAttributeMultipliers.entrySet()) {
       String attrId = entry.getKey();
       AttributeBonus bonusEntry = entry.getValue();
       double multiplier = bonusEntry.multiplier;
@@ -174,7 +174,7 @@ public class SkillBonusHelper {
   }
 
   public static void applyVitalityBonus(ServerPlayer player, int vitalityLevel) {
-    for (Map.Entry<String, AttributeBonus> entry : Config.vitalityAttributeMultipliers.entrySet()) {
+    for (Map.Entry<String, AttributeBonus> entry : ASConfig.vitalityAttributeMultipliers.entrySet()) {
       String attrId = entry.getKey();
       AttributeBonus bonusEntry = entry.getValue();
       double multiplier = bonusEntry.multiplier;
@@ -206,7 +206,7 @@ public class SkillBonusHelper {
   }
 
   public static void applyMindBonus(ServerPlayer player, int mindLevel) {
-    for (Map.Entry<String, AttributeBonus> entry : Config.mindAttributeMultipliers.entrySet()) {
+    for (Map.Entry<String, AttributeBonus> entry : ASConfig.mindAttributeMultipliers.entrySet()) {
       String attrId = entry.getKey();
       AttributeBonus bonusEntry = entry.getValue();
       double multiplier = bonusEntry.multiplier;
@@ -239,7 +239,7 @@ public class SkillBonusHelper {
 
   public static void applyIntelligenceBonus(ServerPlayer player, int intelligenceLevel) {
     for (Map.Entry<String, AttributeBonus> entry :
-        Config.intelligenceAttributeMultipliers.entrySet()) {
+        ASConfig.intelligenceAttributeMultipliers.entrySet()) {
       String attrId = entry.getKey();
       AttributeBonus bonusEntry = entry.getValue();
       double multiplier = bonusEntry.multiplier;

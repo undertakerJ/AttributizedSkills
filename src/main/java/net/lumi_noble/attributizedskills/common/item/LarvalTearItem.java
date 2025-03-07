@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -14,7 +14,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -35,7 +34,7 @@ public class LarvalTearItem extends Item {
 			return InteractionResultHolder.fail(itemstack);
 		}
 
-		TearAction action = Config.getTearAction();
+		TearAction action = ASConfig.getTearAction();
 		switch (action) {
 			case RESET: {
 				player.displayClientMessage(Component.translatable("larvar_tear.reset_successful").withStyle(ChatFormatting.GREEN), true);
@@ -66,7 +65,7 @@ public class LarvalTearItem extends Item {
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
 		super.appendHoverText(stack, level, tooltip, flag);
-		TearAction action = Config.getTearAction();
+		TearAction action = ASConfig.getTearAction();
 		switch (action) {
 			case RESET:
 				tooltip.add(Component.translatable("attributizedskills.tooltip.larval_tear_reset").withStyle(ChatFormatting.GRAY));

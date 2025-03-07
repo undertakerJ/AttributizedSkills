@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.attributes.ModAttributes;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
 import net.lumi_noble.attributizedskills.common.network.packets.SyncToClientPacket;
@@ -31,7 +31,7 @@ public class SetCommand {
                     Commands.argument("skill", EnumArgument.enumArgument(Skill.class))
                         .then(
                             Commands.argument(
-                                    "level", IntegerArgumentType.integer(1, Config.getMaxLevel()))
+                                    "level", IntegerArgumentType.integer(1, ASConfig.getMaxLevel()))
                                 .executes(SetCommand::execute))));
   }
 

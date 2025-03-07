@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Requirement;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
 import net.lumi_noble.attributizedskills.common.util.CalculateAttributeValue;
@@ -39,9 +39,10 @@ public class Tooltip {
       SkillModel skillModel = SkillModel.get();
 
       Requirement[] requirements =
-          Config.getItemRequirements(ForgeRegistries.ITEMS.getKey(itemStack.getItem()));
+          ASConfig.getItemRequirements(ForgeRegistries.ITEMS.getKey(itemStack.getItem()));
 
       if (requirements != null) {
+        tooltips.add(Component.translatable("tooltip.item.requirements").withStyle(ChatFormatting.YELLOW));
         for (Requirement requirement : requirements) {
 
           ChatFormatting color =
@@ -50,10 +51,10 @@ public class Tooltip {
                   : ChatFormatting.RED;
           tooltips.add(
               Component.translatable(requirement.getSkill().displayName)
-                  .append(" " + requirement.getLevel())
+                  .append(" - " + (int) requirement.getLevel())
                   .withStyle(color));
         }
-      } else if (Config.getIfUseAttributeLocks()) {
+      } else if (ASConfig.getIfUseAttributeLocks()) {
         addAttributeRestrictionTooltips(tooltips, EquipmentSlot.MAINHAND, itemStack, skillModel);
         addAttributeRestrictionTooltips(tooltips, EquipmentSlot.OFFHAND, itemStack, skillModel);
         addAttributeRestrictionTooltips(tooltips, EquipmentSlot.CHEST, itemStack, skillModel);
@@ -69,11 +70,10 @@ public class Tooltip {
         if (!enchants.isEmpty()) {
           Map<Skill, Integer> maxRequirements = new HashMap<>();
 
-          if (!enchants.isEmpty()) {
             for (Enchantment enchant : enchants.keySet()) {
               int enchantLevel = enchants.get(enchant);
               Requirement[] requirementsPerEnchant =
-                  Config.getEnchantmentRequirements(ForgeRegistries.ENCHANTMENTS.getKey(enchant));
+                  ASConfig.getEnchantmentRequirements(ForgeRegistries.ENCHANTMENTS.getKey(enchant));
 
               if (requirementsPerEnchant != null) {
                 for (Requirement enchantRequirement : requirementsPerEnchant) {
@@ -85,13 +85,12 @@ public class Tooltip {
                               : Math.round(
                                   levelRequirement
                                       + (enchantLevel
-                                          * Config.getEnchantmentRequirementIncrease())));
+                                          * ASConfig.getEnchantmentRequirementIncrease())));
 
                   maxRequirements.merge(enchantRequirement.getSkill(), finalValue, Math::max);
                 }
               }
-            }
-
+              tooltips.add(Component.translatable("tooltip.enchant.requirements").withStyle(ChatFormatting.YELLOW));
             for (Map.Entry<Skill, Integer> entry : maxRequirements.entrySet()) {
               Skill skill = entry.getKey();
               int maxFinalValue = entry.getValue();
@@ -101,7 +100,7 @@ public class Tooltip {
                       : ChatFormatting.RED;
               tooltips.add(
                   Component.translatable(skill.displayName)
-                      .append(" " + maxFinalValue)
+                      .append(" - " + maxFinalValue)
                       .withStyle(color));
             }
           }
@@ -112,15 +111,13 @@ public class Tooltip {
 
   private void addAttributeRestrictionTooltips(
       List<Component> tooltips, EquipmentSlot slot, ItemStack stack, SkillModel skillModel) {
-
     Multimap<Attribute, AttributeModifier> attributeModifiers = stack.getAttributeModifiers(slot);
 
     for (Attribute a : attributeModifiers.keys()) {
 
-      // for vanilla attributes
       String attributeID = a.getDescriptionId().replaceAll("attribute.name.", "").trim();
 
-      Requirement[] attributeRequirements = Config.getAttributeRequirements(attributeID);
+      Requirement[] attributeRequirements = ASConfig.getAttributeRequirements(attributeID);
 
       if (attributeRequirements != null) {
 
@@ -129,7 +126,7 @@ public class Tooltip {
         for (Requirement requirement : attributeRequirements) {
           int finalAmount = (int) Math.round(requirement.getLevel() * attributeValue);
 
-          if (attributeValue <= Config.getSkillOmitLevel(requirement.getSkill())) {
+          if (attributeValue <= ASConfig.getSkillOmitLevel(requirement.getSkill())) {
             continue;
           }
 

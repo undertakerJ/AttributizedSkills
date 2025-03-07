@@ -3,7 +3,7 @@ package net.lumi_noble.attributizedskills.common.network.packets;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.attributes.ModAttributes;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
@@ -48,12 +48,12 @@ public class RequestLevelUpPacket {
 			SkillModel skillModel = SkillModel.get(player);
 			Skill skill = Skill.values()[this.skill];
 			int currentLevel = skillModel.getSkillLevel(skill);
-			int maxLevel = Config.getMaxLevel();
+			int maxLevel = ASConfig.getMaxLevel();
 			int totalCost = 0;
 
 			// Подсчёт общей стоимости уровней
 			for (int i = 0; i < levels && (currentLevel + i) < maxLevel; i++) {
-				totalCost += Config.getStartCost() + ((currentLevel + i) - 1) * Config.getCostIncrease();
+				totalCost += ASConfig.getStartCost() + ((currentLevel + i) - 1) * ASConfig.getCostIncrease();
 			}
 
 			// Получаем количество Tear Points

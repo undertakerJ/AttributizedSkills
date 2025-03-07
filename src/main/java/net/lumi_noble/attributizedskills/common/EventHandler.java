@@ -1,10 +1,9 @@
 package net.lumi_noble.attributizedskills.common;
 
-import net.lumi_noble.attributizedskills.common.capabilities.SkillCapability;
+import net.lumi_noble.attributizedskills.AttributizedSkills;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillProvider;
-import net.lumi_noble.attributizedskills.common.config.Config;
-import net.lumi_noble.attributizedskills.AttributizedSkills;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.effects.AttributizedSkillsEffects;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
+import net.minecraftforge.event.enchanting.EnchantmentLevelSetEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
@@ -57,7 +57,7 @@ public class EventHandler {
 
       // if effect detriment is true, apply negative effects while wielding items with unmet
       // requirements.
-      if (Config.getWhetherEffectDetriment()) {
+      if (ASConfig.getWhetherEffectDetriment()) {
         boolean hasRestrictedItem = false;
 
         for (EquipmentSlot slot : ALL_SLOTS) {
@@ -178,7 +178,7 @@ public class EventHandler {
   // Attack Entity
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   public void onAttackEntity(AttackEntityEvent event) {
-    if (!Config.getWhetherEffectDetriment()) {
+    if (!ASConfig.getWhetherEffectDetriment()) {
       Player player = event.getEntity();
 
       if (player != null) {
@@ -195,7 +195,7 @@ public class EventHandler {
   // Change Equipment
   @SubscribeEvent(priority = EventPriority.HIGHEST)
   public void onChangeEquipment(LivingEquipmentChangeEvent event) {
-    if (!Config.getWhetherEffectDetriment()) {
+    if (!ASConfig.getWhetherEffectDetriment()) {
       if (event.getEntity() instanceof Player) {
         Player player = (Player) event.getEntity();
 
@@ -217,39 +217,20 @@ public class EventHandler {
   @SubscribeEvent
   public void onAttachCapabilities(AttachCapabilitiesEvent<Entity> event) {
     if (event.getObject() instanceof Player) {
-      event.addCapability(new ResourceLocation("rpgskillable","cap_skills"), new SkillProvider(new SkillModel()));
+      event.addCapability(new ResourceLocation(AttributizedSkills.MOD_ID,"cap_skills"), new SkillProvider(new SkillModel()));
     }
   }
 
   @SubscribeEvent
   public void onPlayerDeath(LivingDeathEvent event) {
-    if (Config.getDeathReset() && event.getEntity() instanceof ServerPlayer) {
+    if (ASConfig.getDeathReset() && event.getEntity() instanceof ServerPlayer) {
       ServerPlayer player = (ServerPlayer) event.getEntity();
       SkillModel.get(player).resetSkills(player);
     }
   }
 
-  @SubscribeEvent
-  public void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-    Player player = event.getEntity();
-    if (player instanceof ServerPlayer serverPlayer) {
-      SkillModel model = SkillModel.get(player);
-    }
+  public void enchantEvent(){
+
   }
 
-  @SubscribeEvent
-  public void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-    Player player = event.getEntity();
-    if (player instanceof ServerPlayer serverPlayer) {
-      SkillModel model = SkillModel.get(player);
-    }
-  }
-
-  @SubscribeEvent
-  public void onChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
-    Player player = event.getEntity();
-    if (player instanceof ServerPlayer serverPlayer) {
-      SkillModel model = SkillModel.get(player);
-    }
-  }
 }

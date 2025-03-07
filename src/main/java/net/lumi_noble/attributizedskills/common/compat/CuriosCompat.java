@@ -1,4 +1,4 @@
-package net.lumi_noble.attributizedskills.common;
+package net.lumi_noble.attributizedskills.common.compat;
 
 
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;

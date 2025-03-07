@@ -5,8 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import net.lumi_noble.attributizedskills.common.attributes.ModAttributes;
-import net.lumi_noble.attributizedskills.common.attributes.util.SkillBonusHelper;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Requirement;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
 import net.lumi_noble.attributizedskills.common.util.CalculateAttributeValue;
@@ -63,7 +62,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 	public int getTearPoints() {return tearPoints;}
 
 	public boolean underMaxTotal() {
-		return totalLevel < Config.getMaxLevelTotal();
+		return totalLevel < ASConfig.getMaxLevelTotal();
 	}
 
 
@@ -120,7 +119,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 			return true;
 		}
 
-		Requirement[] requirements = Config.getItemRequirements(itemLoc);
+		Requirement[] requirements = ASConfig.getItemRequirements(itemLoc);
 
 		if (requirements != null) {
 			for (Requirement requirement : requirements) {
@@ -136,7 +135,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 			}
 		}
 
-		else if (Config.getIfUseAttributeLocks()) {
+		else if (ASConfig.getIfUseAttributeLocks()) {
 
 			Multimap<Attribute, AttributeModifier> attributeModifiers = itemStack.getAttributeModifiers(slot);
 
@@ -145,7 +144,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 				// for vanilla attributes
 				String attributeID = a.getDescriptionId().replaceAll("attribute.name.", "").trim();
 
-				Requirement[] attributeRequirements = Config.getAttributeRequirements(attributeID);
+				Requirement[] attributeRequirements = ASConfig.getAttributeRequirements(attributeID);
 
 				if (attributeRequirements != null) {
 
@@ -154,7 +153,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 					for (Requirement requirement : attributeRequirements) {
 						int finalAmount = (int) Math.round(requirement.getLevel() * attributeValue);
 						// if item is omitted
-						if (attributeValue <= Config.getSkillOmitLevel(requirement.getSkill())) {
+						if (attributeValue <= ASConfig.getSkillOmitLevel(requirement.getSkill())) {
 							continue;
 						}
 
@@ -183,10 +182,10 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 					
 					// only replace requirements if enchant level is higher
 					int enchantLevel = enchants.get(enchant);
-					Integer oldValue = enchantRequirements.put(Config.getEnchantmentRequirements(ForgeRegistries.ENCHANTMENTS.getKey(enchant)), enchantLevel);
+					Integer oldValue = enchantRequirements.put(ASConfig.getEnchantmentRequirements(ForgeRegistries.ENCHANTMENTS.getKey(enchant)), enchantLevel);
 					
 					if (oldValue != null && oldValue.intValue() > enchantLevel) {
-						enchantRequirements.put(Config.getEnchantmentRequirements(ForgeRegistries.ENCHANTMENTS.getKey(enchant)), oldValue);
+						enchantRequirements.put(ASConfig.getEnchantmentRequirements(ForgeRegistries.ENCHANTMENTS.getKey(enchant)), oldValue);
 					}
 				}
 
@@ -199,7 +198,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 								double levelRequirement = enchantRequirement.getLevel();
 								int enchantLevel = enchantRequirements.get(requirementsPerEnchant);
 								
-								double finalValue = enchantLevel == 1 ? levelRequirement : levelRequirement + (enchantLevel * Config.getEnchantmentRequirementIncrease());
+								double finalValue = enchantLevel == 1 ? levelRequirement : levelRequirement + (enchantLevel * ASConfig.getEnchantmentRequirementIncrease());
 								
 								if (!(SkillModel.get(player).getSkillLevel(enchantRequirement.getSkill()) >= finalValue)) {
 									
@@ -226,7 +225,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 			return true;
 		}
 
-		Requirement[] requirements = Config.getItemRequirements(resource);
+		Requirement[] requirements = ASConfig.getItemRequirements(resource);
 
 		if (requirements != null) {
 			for (Requirement requirement : requirements) {
@@ -306,7 +305,7 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 	}
 
 	public static boolean isBlacklisted(ResourceLocation loc) {
-		return Config.getBlacklist().contains(loc.toString());
+		return ASConfig.getBlacklist().contains(loc.toString());
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -91,8 +91,8 @@ public class AddSkillBonusCommand {
         }
         currentList.add(bonusEntry);
         updateSkillBonuses(skill, currentList);
-        Config.getConfig().save();
-        Config.load();
+        ASConfig.getConfig().save();
+        ASConfig.load();
         context.getSource().sendSuccess(Component.translatable("command.add_bonus.success",
                 skill.name(), bonusEntry), true);
         return 1;
@@ -102,17 +102,17 @@ public class AddSkillBonusCommand {
         // Возвращаем список из соответствующего конфигурационного значения
         switch (skill) {
             case VITALITY:
-                return new ArrayList<>(Config.VITALITY_SKILL_ATTRIBUTE_BONUSES.get());
+                return new ArrayList<>(ASConfig.VITALITY_SKILL_ATTRIBUTE_BONUSES.get());
             case STRENGTH:
-                return new ArrayList<>(Config.STRENGTH_SKILL_ATTRIBUTE_BONUSES.get());
+                return new ArrayList<>(ASConfig.STRENGTH_SKILL_ATTRIBUTE_BONUSES.get());
             case MIND:
-                return new ArrayList<>(Config.MIND_SKILL_ATTRIBUTE_BONUSES.get());
+                return new ArrayList<>(ASConfig.MIND_SKILL_ATTRIBUTE_BONUSES.get());
             case DEXTERITY:
-                return new ArrayList<>(Config.DEXTERITY_SKILL_ATTRIBUTE_BONUSES.get());
+                return new ArrayList<>(ASConfig.DEXTERITY_SKILL_ATTRIBUTE_BONUSES.get());
             case ENDURANCE:
-                return new ArrayList<>(Config.ENDURANCE_SKILL_ATTRIBUTE_BONUSES.get());
+                return new ArrayList<>(ASConfig.ENDURANCE_SKILL_ATTRIBUTE_BONUSES.get());
             case INTELLIGENCE:
-                return new ArrayList<>(Config.INTELLIGENCE_SKILL_ATTRIBUTE_BONUSES.get());
+                return new ArrayList<>(ASConfig.INTELLIGENCE_SKILL_ATTRIBUTE_BONUSES.get());
             default:
                 return new ArrayList<>();
         }
@@ -122,27 +122,27 @@ public class AddSkillBonusCommand {
         // Обновляем соответствующее конфигурационное значение
         switch (skill) {
             case VITALITY:
-                Config.VITALITY_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
+                ASConfig.VITALITY_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
                 break;
             case STRENGTH:
-                Config.STRENGTH_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
+                ASConfig.STRENGTH_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
                 break;
             case MIND:
-                Config.MIND_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
+                ASConfig.MIND_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
                 break;
             case DEXTERITY:
-                Config.DEXTERITY_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
+                ASConfig.DEXTERITY_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
                 break;
             case ENDURANCE:
-                Config.ENDURANCE_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
+                ASConfig.ENDURANCE_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
                 break;
             case INTELLIGENCE:
-                Config.INTELLIGENCE_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
+                ASConfig.INTELLIGENCE_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
                 break;
         }
         // Сохраняем и перечитываем конфиг
-        Config.getConfig().save();
-        Config.load();
+        ASConfig.getConfig().save();
+        ASConfig.load();
     }
 
 }

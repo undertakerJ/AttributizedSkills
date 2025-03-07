@@ -2,11 +2,9 @@ package net.lumi_noble.attributizedskills.common.attributes.util;
 
 import net.lumi_noble.attributizedskills.AttributizedSkills;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -51,20 +49,20 @@ public class SkillBonusManager {
         }
     }
     public static Map<String, AttributeBonus> getBonusMapForSkill(Skill skill) {
-        Config.load();
+        ASConfig.load();
         switch (skill) {
             case VITALITY:
-                return Config.vitalityAttributeMultipliers;
+                return ASConfig.vitalityAttributeMultipliers;
             case STRENGTH:
-                return Config.strengthAttributeMultipliers;
+                return ASConfig.strengthAttributeMultipliers;
             case MIND:
-                return Config.mindAttributeMultipliers;
+                return ASConfig.mindAttributeMultipliers;
             case DEXTERITY:
-                return Config.dexterityAttributeMultipliers;
+                return ASConfig.dexterityAttributeMultipliers;
             case ENDURANCE:
-                return Config.enduranceAttributeMultipliers;
+                return ASConfig.enduranceAttributeMultipliers;
             case INTELLIGENCE:
-                return Config.intelligenceAttributeMultipliers;
+                return ASConfig.intelligenceAttributeMultipliers;
             default:
                 return null;
         }

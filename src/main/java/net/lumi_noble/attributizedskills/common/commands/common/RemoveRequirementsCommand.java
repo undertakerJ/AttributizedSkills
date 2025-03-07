@@ -3,7 +3,7 @@ package net.lumi_noble.attributizedskills.common.commands.common;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -14,7 +14,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class RemoveRequirementsCommand {
 
-    // Регистрируем команду: /attributized addrequirements <player> <requirements...>
     public static LiteralArgumentBuilder<CommandSourceStack> register() {
         return Commands.literal("remove_requirements")
                 .requires(source -> source.hasPermission(2))
@@ -39,7 +38,7 @@ public class RemoveRequirementsCommand {
         return 1;
     }
     private static void removeConfig(String itemId) {
-        java.util.List<String> currentList = new java.util.ArrayList<>(Config.OVERRIDE_SKILL_LOCKS.get());
+        java.util.List<String> currentList = new java.util.ArrayList<>(ASConfig.OVERRIDE_SKILL_LOCKS.get());
         String entryToRemove = null;
         for (String entry : currentList) {
             if (entry.startsWith(itemId)) {
@@ -50,9 +49,9 @@ public class RemoveRequirementsCommand {
         if (entryToRemove != null) {
             currentList.remove(entryToRemove);
         }
-        Config.OVERRIDE_SKILL_LOCKS.set(currentList);
-        Config.getConfig().save();
-        Config.load();
+        ASConfig.OVERRIDE_SKILL_LOCKS.set(currentList);
+        ASConfig.getConfig().save();
+        ASConfig.load();
     }
 
 }

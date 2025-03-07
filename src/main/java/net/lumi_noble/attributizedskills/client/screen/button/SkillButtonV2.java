@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.lumi_noble.attributizedskills.AttributizedSkills;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.network.ModNetworking;
 import net.lumi_noble.attributizedskills.common.network.packets.RequestLevelUpPacket;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
@@ -42,7 +42,7 @@ public class SkillButtonV2 extends AbstractButton {
 
         SkillModel model = SkillModel.get();
         int level = model.getSkillLevel(skill);
-        int maxLevel = Config.getMaxLevel();
+        int maxLevel = ASConfig.getMaxLevel();
         int tearPoints = model.getTearPoints();
 
         if (!model.underMaxTotal()) {
@@ -55,7 +55,7 @@ public class SkillButtonV2 extends AbstractButton {
         int textureY = 0;
         if (level == maxLevel) {
             textureY = 96;
-        } else if (pressed && !Config.DISABLE_LEVEL_BUY.get()) {
+        } else if (pressed && !ASConfig.DISABLE_LEVEL_BUY.get()) {
             textureY = 32;
         } else if (this.isMouseOver(mouseX, mouseY)) {
             textureY = 64;
@@ -87,7 +87,7 @@ public class SkillButtonV2 extends AbstractButton {
         String levelText = level + "/" + maxLevel;
         int levelTextWidth = minecraft.font.width(levelText);
         int centeredLevelX = x + (width / 2) - (levelTextWidth / 2);
-        if (this.isMouseOver(mouseX, mouseY) && level < maxLevel && !Config.DISABLE_LEVEL_BUY.get()) {
+        if (this.isMouseOver(mouseX, mouseY) && level < maxLevel && !ASConfig.DISABLE_LEVEL_BUY.get()) {
             int numLevels = Screen.hasShiftDown() ? 5 : 1;
 
             if (tearPoints >= numLevels) {
@@ -99,7 +99,7 @@ public class SkillButtonV2 extends AbstractButton {
             } else {
                 int totalCost = 0;
                 for (int i = 0; i < numLevels && (level + i) < maxLevel; i++) {
-                    totalCost += Config.getStartCost() + ((level + i) - 1) * Config.getCostIncrease();
+                    totalCost += ASConfig.getStartCost() + ((level + i) - 1) * ASConfig.getCostIncrease();
                 }
                 int costColor = (minecraft.player.experienceLevel >= totalCost && model.underMaxTotal()) ? 0x7EFC20 : 0xFC5454;
                 String costText = totalCost + " levels";
@@ -158,7 +158,7 @@ public class SkillButtonV2 extends AbstractButton {
 
     @Override
     public void onPress() {
-        if (underMaxTotal && !Config.DISABLE_LEVEL_BUY.get()) {
+        if (underMaxTotal && !ASConfig.DISABLE_LEVEL_BUY.get()) {
             SkillModel model = SkillModel.get();
             int maxPointsToUse = Screen.hasShiftDown() ? 5 : 1;
             int tearPoints = model.getTearPoints();

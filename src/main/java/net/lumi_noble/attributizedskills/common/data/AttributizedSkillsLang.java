@@ -42,6 +42,14 @@ public class AttributizedSkillsLang extends LanguageProvider  {
     	add("command.add_bonus.success", "Added bonus for %1$s: %2$s");
 		add("command.error.remove_all_bonuses", "If you see this message, then dev of mod have a severe case of skill issue, and was unable to remove bonuses on live players.");
 		add("command.set_tear_point.success", "Set %1$s free tear points to %2$s");
+		//Iron's Spells compat
+		add("spell.requirement.not_met", "You cannot cast %1$s. Missing requirement: %2$s (%3$s)");
+		add("command.add_spell_req.success", "Set requirements for spell: %1$s");
+		add("command.remove_spell_req.error", "There no requirements for spell: %1$s");
+		add("command.remove_spell_req.success", "Removed requirements for spell: %1$s");
+		add("tooltip.spell.requirements", "Spell Requirements");
+		add("tooltip.item.requirements", "Item Requirements");
+		add("tooltip.enchant.requirements", "Enchantment Requirements");
 		// Attributes
 		add("attribute.attributizedskills.vitality", "Vitality");
 		add("attribute.attributizedskills.dexterity", "Dexterity");

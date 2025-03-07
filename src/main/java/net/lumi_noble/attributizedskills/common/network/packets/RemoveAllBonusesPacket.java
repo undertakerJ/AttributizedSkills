@@ -2,7 +2,7 @@ package net.lumi_noble.attributizedskills.common.network.packets;
 
 import net.lumi_noble.attributizedskills.common.attributes.util.AttributeBonus;
 import net.lumi_noble.attributizedskills.common.attributes.util.SkillBonusHelper;
-import net.lumi_noble.attributizedskills.common.config.Config;
+import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.FriendlyByteBuf;
@@ -40,14 +40,14 @@ public class RemoveAllBonusesPacket {
     }
 
     private Map<String, net.lumi_noble.attributizedskills.common.attributes.util.AttributeBonus> getBonusMapForSkill(Skill skill) {
-        Config.load();
+        ASConfig.load();
         return switch (skill) {
-            case VITALITY -> Config.vitalityAttributeMultipliers;
-            case STRENGTH -> Config.strengthAttributeMultipliers;
-            case MIND -> Config.mindAttributeMultipliers;
-            case DEXTERITY -> Config.dexterityAttributeMultipliers;
-            case ENDURANCE -> Config.enduranceAttributeMultipliers;
-            case INTELLIGENCE -> Config.intelligenceAttributeMultipliers;
+            case VITALITY -> ASConfig.vitalityAttributeMultipliers;
+            case STRENGTH -> ASConfig.strengthAttributeMultipliers;
+            case MIND -> ASConfig.mindAttributeMultipliers;
+            case DEXTERITY -> ASConfig.dexterityAttributeMultipliers;
+            case ENDURANCE -> ASConfig.enduranceAttributeMultipliers;
+            case INTELLIGENCE -> ASConfig.intelligenceAttributeMultipliers;
             default -> null;
         };
     }
