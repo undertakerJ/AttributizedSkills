@@ -36,7 +36,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
 minecraft {
-    mappings channel: 'parchment', version: '2022.08.14-1.19.2'
+    mappings channel: 'parchment', version: '2023.09.03-1.20.1'
 
     runs {
         client {
@@ -124,19 +124,19 @@ repositories {
 
 dependencies {
 
-    minecraft "net.minecraftforge:forge:1.19.2-${forge_version}"
-    implementation fg.deobf("curse.maven:feathers-699933:${feathers_version}")
-    implementation fg.deobf("top.theillusivec4.curios:curios-forge:1.19.2-${curios_version}")
+    minecraft "net.minecraftforge:forge:1.20.1-${forge_version}"
+    implementation fg.deobf("curse.maven:feathers-699933:4814309")
+    implementation fg.deobf("curse.maven:curios-309927:6238756")
 
-    implementation fg.deobf("curse.maven:max-health-fix-492246:4658481")
-    implementation fg.deobf("curse.maven:attributefix-280510:5126457")
-    implementation fg.deobf("curse.maven:item-production-lib-950401:5114035")
-    implementation fg.deobf("curse.maven:passive-skill-tree-850298:5729406")
+    implementation fg.deobf("curse.maven:max-health-fix-492246:5378283")
+    implementation fg.deobf("curse.maven:attributefix-280510:4911084")
+    implementation fg.deobf("curse.maven:item-production-lib-950401:5114036")
+    implementation fg.deobf("curse.maven:passive-skill-tree-850298:5715659")
 
-    implementation fg.deobf("io.redspace.ironsspellbooks:irons_spellbooks:${irons_spells_version}")
-    implementation fg.deobf("curse.maven:caelus-308989:3929284")
-    implementation fg.deobf("curse.maven:playeranimator-658587:4418149")
-    implementation fg.deobf("curse.maven:geckolib-388172:4407241")
+    implementation fg.deobf("curse.maven:irons-spells-n-spellbooks-855414:6054196")
+    implementation fg.deobf("curse.maven:caelus-308989:5281700")
+    implementation fg.deobf("curse.maven:playeranimator-658587:4587214")
+    implementation fg.deobf("curse.maven:geckolib-388172:6027567")
 
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }

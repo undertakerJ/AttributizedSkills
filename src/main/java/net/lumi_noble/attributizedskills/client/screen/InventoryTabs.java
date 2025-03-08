@@ -21,7 +21,7 @@ public class InventoryTabs {
 
             event.addListener(new StatIconButton(0, 0, 16, 16, Component.literal(""), button -> {
                 Minecraft.getInstance().setScreen(new SkillScreenV2());
-            }));
+            }, supplier -> Component.empty()));
         }
     }
 }

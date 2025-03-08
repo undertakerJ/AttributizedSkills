@@ -4,11 +4,12 @@ import net.lumi_noble.attributizedskills.AttributizedSkills;
 import net.lumi_noble.attributizedskills.common.effects.AttributizedSkillsEffects;
 
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;
 
 public class AttributizedSkillsLang extends LanguageProvider  {
 
-	public AttributizedSkillsLang(DataGenerator gen, String locale) {
+	public AttributizedSkillsLang(PackOutput gen, String locale) {
 		super(gen, AttributizedSkills.MOD_ID, locale);
 	}
 

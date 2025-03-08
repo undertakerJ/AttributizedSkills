@@ -43,7 +43,7 @@ public class RequestLevelUpPacket {
 	public void handle(Supplier<NetworkEvent.Context> context) {
 		context.get().enqueueWork(() -> {
 			ServerPlayer player = context.get().getSender();
-			if (player == null) return; // Проверка на null
+			if (player == null) return;
 
 			SkillModel skillModel = SkillModel.get(player);
 			Skill skill = Skill.values()[this.skill];
@@ -51,15 +51,12 @@ public class RequestLevelUpPacket {
 			int maxLevel = ASConfig.getMaxLevel();
 			int totalCost = 0;
 
-			// Подсчёт общей стоимости уровней
 			for (int i = 0; i < levels && (currentLevel + i) < maxLevel; i++) {
 				totalCost += ASConfig.getStartCost() + ((currentLevel + i) - 1) * ASConfig.getCostIncrease();
 			}
 
-			// Получаем количество Tear Points
 			int tearPoints = skillModel.getTearPoints();
 
-			// Проверка, хватает ли ресурсов
 			boolean canUseTearPoints = useTearPoints && tearPoints >= levels;
 
 			if (currentLevel < maxLevel && skillModel.underMaxTotal()) {
@@ -69,12 +66,10 @@ public class RequestLevelUpPacket {
 					player.giveExperienceLevels(-totalCost);
 				}
 
-				// ✅ Повышаем уровень без наслаивания
 				for (int i = 0; i < levels && skillModel.getSkillLevel(skill) < maxLevel; i++) {
 					skillModel.setSkillLevel(skill, skillModel.getSkillLevel(skill) + 1, player);
 				}
 
-				// ✅ Обновляем атрибуты и синхронизируем данные
 				updatePlayerAttribute(player, skill, skillModel.getSkillLevel(skill));
 				skillModel.updateTotalLevel();
 				SyncToClientPacket.send(player);

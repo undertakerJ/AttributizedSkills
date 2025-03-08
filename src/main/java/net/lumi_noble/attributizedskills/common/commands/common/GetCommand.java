@@ -29,7 +29,7 @@ public class GetCommand {
         ServerPlayer player = EntityArgument.getPlayer(context, "player");
         Skill skill = context.getArgument("skill", Skill.class);
         int level = SkillModel.get(player).getSkillLevel(skill);
-        context.getSource().sendSuccess( Component.literal(player.getName().getString())
+        context.getSource().sendSuccess(() -> Component.literal(player.getName().getString())
                 .append(" ")
                 .append(Component.translatable("message.command_get"))
                 .append(" ")

@@ -36,7 +36,7 @@ public class RemoveSpellRequirementCommand {
             ASConfig.SPELL_REQUIREMENTS.set(currentList);
             ASConfig.getConfig().save();
             ASConfig.loadSpellRequirements();
-            context.getSource().sendSuccess(Component.translatable("command.remove_spell_req.success", Component.translatable("spell." + spellID.toLanguageKey())),true);
+            context.getSource().sendSuccess(() -> Component.translatable("command.remove_spell_req.success", Component.translatable("spell." + spellID.toLanguageKey())),true);
             return 1;
         } else
             context.getSource().sendFailure(Component.translatable("command.remove_spell_req.error", Component.translatable("spell." + spellID.toLanguageKey())));

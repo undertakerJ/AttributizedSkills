@@ -103,7 +103,7 @@ public class AddSpellRequirementCommand {
             configLine.append(" perlevel:").append(perLevelIncrement);
 
             updateSpellRequirementConfig(spellID, configLine.toString());
-            context.getSource().sendSuccess(Component.translatable("command.add_spell_req.success", Component.translatable("spell." + spellID.toLanguageKey())), true);
+            context.getSource().sendSuccess(() -> Component.translatable("command.add_spell_req.success", Component.translatable("spell." + spellID.toLanguageKey())), true);
             return 1;
 
         } catch (Exception e) {

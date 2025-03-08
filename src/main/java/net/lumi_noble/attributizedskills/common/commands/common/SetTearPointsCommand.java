@@ -26,7 +26,7 @@ public class SetTearPointsCommand {
         SkillModel model = SkillModel.get(player);
         model.setTearPoints(points);
         SyncToClientPacket.send(player);
-        context.getSource().sendSuccess(Component.translatable("command.set_tear_point.success", points, player.getName().getString()), true);
+        context.getSource().sendSuccess(() -> Component.translatable("command.set_tear_point.success", points, player.getName().getString()), true);
         return 1;
     }
 }

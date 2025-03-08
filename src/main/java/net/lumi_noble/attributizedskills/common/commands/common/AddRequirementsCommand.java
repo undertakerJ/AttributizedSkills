@@ -111,7 +111,7 @@ public class AddRequirementsCommand {
         skillRequirements.forEach((skill, lvl) -> configLine.append(" ").append(skill.name().toLowerCase()).append(":").append(lvl));
 
         updateConfig(itemId, configLine.toString());
-        context.getSource().sendSuccess(Component.literal("Set requirements for item: " + itemId), true);
+        context.getSource().sendSuccess(() -> Component.literal("Set requirements for item: " + itemId), true);
         return 1;
     }
 

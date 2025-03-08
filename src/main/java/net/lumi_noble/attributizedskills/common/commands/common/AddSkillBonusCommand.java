@@ -93,7 +93,7 @@ public class AddSkillBonusCommand {
         updateSkillBonuses(skill, currentList);
         ASConfig.getConfig().save();
         ASConfig.load();
-        context.getSource().sendSuccess(Component.translatable("command.add_bonus.success",
+        context.getSource().sendSuccess(() -> Component.translatable("command.add_bonus.success",
                 skill.name(), bonusEntry), true);
         return 1;
     }

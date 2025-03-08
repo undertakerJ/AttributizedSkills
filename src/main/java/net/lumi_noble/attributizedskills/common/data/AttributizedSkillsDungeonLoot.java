@@ -3,6 +3,7 @@ package net.lumi_noble.attributizedskills.common.data;
 import net.lumi_noble.attributizedskills.AttributizedSkills;
 import net.lumi_noble.attributizedskills.common.loot.AddItemModifier;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -16,7 +17,7 @@ import java.util.Arrays;
 
 public class AttributizedSkillsDungeonLoot extends GlobalLootModifierProvider {
 
-	public AttributizedSkillsDungeonLoot(DataGenerator gen, String modid) {
+	public AttributizedSkillsDungeonLoot(PackOutput gen, String modid) {
 		super(gen, modid);
 	}
 

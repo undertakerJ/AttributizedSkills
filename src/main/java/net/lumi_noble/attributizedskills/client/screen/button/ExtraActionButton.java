@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.lumi_noble.attributizedskills.AttributizedSkills;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
@@ -13,17 +14,18 @@ public class ExtraActionButton extends AbstractButton {
     private final Component buttonText;
     private final Runnable onClickAction;
     private boolean pressed = false;
-
+    private static final ResourceLocation TEXTURE =
+            new ResourceLocation(AttributizedSkills.MOD_ID, "textures/gui/buttons_v2.png");
     public ExtraActionButton(int x, int y, int width, int height, Component buttonText, Runnable onClickAction) {
         super(x, y, width, height, buttonText);
         this.buttonText = buttonText;
         this.onClickAction = onClickAction;
     }
-
     @Override
-    public void render(PoseStack stack, int mouseX, int mouseY, float partialTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        PoseStack stack = guiGraphics.pose();
         Minecraft minecraft = Minecraft.getInstance();
-        RenderSystem.setShaderTexture(0, new ResourceLocation(AttributizedSkills.MOD_ID, "textures/gui/buttons_v2.png"));
+        RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
         int textureX = 176;
@@ -37,11 +39,11 @@ public class ExtraActionButton extends AbstractButton {
         } else {
             textureY = 96;
         }
-        blit(stack, x, y, textureX, textureY, width, height);
-        blit(stack,x+6 ,y+8, 240, 128, 16, 16);
+        guiGraphics.blit(TEXTURE, getX(), getY(), textureX, textureY, width, height);
+        guiGraphics.blit(TEXTURE, getX() +6 ,getY()+8, 240, 128, 16, 16);
         int textWidth = minecraft.font.width(buttonText);
-        SkillButtonV2.drawOutlinedText(stack, "Back to" , x + (width / 2) - (textWidth / 2) + 8, y + (height - minecraft.font.lineHeight) / 2 -3, 0xFFFFFF);
-               SkillButtonV2.drawOutlinedText(stack, "Inventory" , x + (width / 2) - (textWidth / 2) + 8, y + (height - minecraft.font.lineHeight) / 2 + 6, 0xFFFFFF);
+        SkillButtonV2.drawOutlinedText(guiGraphics, "Back to" , getX() + (width / 2) - (textWidth / 2) + 8, getY() + (height - minecraft.font.lineHeight) / 2 -3, 0xFFFFFF);
+               SkillButtonV2.drawOutlinedText(guiGraphics, "Inventory" , getX() + (width / 2) - (textWidth / 2) + 8, getY() + (height - minecraft.font.lineHeight) / 2 + 6, 0xFFFFFF);
 
     }
 
@@ -72,6 +74,7 @@ public class ExtraActionButton extends AbstractButton {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+
     }
 }

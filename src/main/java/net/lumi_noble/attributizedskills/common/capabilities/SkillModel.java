@@ -135,42 +135,6 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 			}
 		}
 
-		else if (ASConfig.getIfUseAttributeLocks()) {
-
-			Multimap<Attribute, AttributeModifier> attributeModifiers = itemStack.getAttributeModifiers(slot);
-
-			for (Attribute a : attributeModifiers.keys()) {
-				
-				// for vanilla attributes
-				String attributeID = a.getDescriptionId().replaceAll("attribute.name.", "").trim();
-
-				Requirement[] attributeRequirements = ASConfig.getAttributeRequirements(attributeID);
-
-				if (attributeRequirements != null) {
-
-					double attributeValue = CalculateAttributeValue.get(a, attributeModifiers.get(a));
-
-					for (Requirement requirement : attributeRequirements) {
-						int finalAmount = (int) Math.round(requirement.getLevel() * attributeValue);
-						// if item is omitted
-						if (attributeValue <= ASConfig.getSkillOmitLevel(requirement.getSkill())) {
-							continue;
-						}
-
-						if (!(SkillModel.get(player).getSkillLevel(requirement.getSkill()) >= finalAmount)) {
-							
-							if (player instanceof ServerPlayer) {
-									displayUnmetRequirementMessage(slot, (ServerPlayer) player);
-
-							}
-							
-							return false;
-						}
-					}
-				}
-			}
-		}
-
 		if (itemStack.isEnchanted()) {
 			Map<Enchantment, Integer> enchants = EnchantmentHelper.getEnchantments(itemStack);
 			Map<Requirement[], Integer> enchantRequirements = new HashMap<>();

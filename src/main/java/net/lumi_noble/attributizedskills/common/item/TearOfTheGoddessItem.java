@@ -18,7 +18,7 @@ import net.minecraft.world.level.Level;
 
 public class TearOfTheGoddessItem extends Item {
     public TearOfTheGoddessItem() {
-    super(new Properties().stacksTo(4).tab(CreativeModeTab.TAB_MISC).rarity(Rarity.RARE));
+    super(new Properties().stacksTo(4));
     }
 
     @Override

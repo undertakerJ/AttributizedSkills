@@ -1,13 +1,13 @@
 modLoader="javafml" #mandatory
-loaderVersion="[43,)" #mandatory
-license="All Rights Reserved"
+loaderVersion="[47,)" #mandatory
+license="MIT"
 #issueTrackerURL="https://your.issue.tracker.example/"
 
 [[mods]]
 modId="attributizedskills"
 version="1.0.0"
 displayName="Attributized Skills"
-logoFile="attributizedskills.png" # если логотип изменён, положите его в корень jar
+logoFile="attributizedskills.png"
 credits="dragoni7, majikdev"
 authors="undertaker_j, Bastrii"
 description='''
@@ -20,13 +20,13 @@ description='''
 [[dependencies.attributizedskills]]
 modId="forge"
 mandatory=true
-versionRange="[43,)"
+versionRange="[47,)"
 ordering="NONE"
 side="BOTH"
 
 [[dependencies.attributizedskills]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.19.2,1.20)"
+versionRange="[1.20.1]"
 ordering="NONE"
 side="BOTH"

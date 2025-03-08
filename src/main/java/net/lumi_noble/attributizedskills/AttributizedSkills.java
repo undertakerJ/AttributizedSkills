@@ -43,8 +43,7 @@ public class AttributizedSkills {
               new LarvalTearItem(
                   new Item.Properties()
                       .stacksTo(16)
-                      .rarity(Rarity.RARE)
-                      .tab(CreativeModeTab.TAB_MISC)));
+                      .rarity(Rarity.RARE)));
   public static final RegistryObject<Item> TEAR_OF_THE_GODDESS =
       ITEMS.register("tear_of_the_goddess", TearOfTheGoddessItem::new);
 

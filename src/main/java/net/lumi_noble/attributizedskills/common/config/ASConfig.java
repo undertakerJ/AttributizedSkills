@@ -23,7 +23,6 @@ public class ASConfig {
   public static final ForgeConfigSpec.BooleanValue DISABLE_LEVEL_BUY;
   private static final ForgeConfigSpec.BooleanValue DEATH_RESET;
   private static final ForgeConfigSpec.BooleanValue EFFECT_DETRIMENT;
-  private static final ForgeConfigSpec.BooleanValue USE_ATTRIBUTE_LOCKS;
   private static final ForgeConfigSpec.IntValue STARTING_COST;
   private static final ForgeConfigSpec.IntValue COST_INCREASE;
   private static final ForgeConfigSpec.IntValue MAXIMUM_LEVEL;
@@ -39,7 +38,6 @@ public class ASConfig {
 
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>> OVERRIDE_SKILL_LOCKS;
   private static final ForgeConfigSpec.ConfigValue<List<? extends String>> ENCHANT_SKILL_LOCKS;
-  private static final ForgeConfigSpec.ConfigValue<List<? extends String>> ATTRIBUTE_SKILL_LOCKS;
   private static final ForgeConfigSpec.ConfigValue<List<? extends String>> IGNORED;
 
   private static final ForgeConfigSpec.ConfigValue<List<? extends Integer>> INV_TAB_OFFSET;
@@ -71,7 +69,6 @@ public class ASConfig {
   public static final Map<String, AttributeBonus> strengthAttributeMultipliers =  new ConcurrentHashMap<>();
   private static boolean deathReset;
   private static boolean effectDetriment;
-  private static boolean useAttributeLocks;
   private static int startingCost;
   private static int costIncrease;
   private static int maximumLevel;
@@ -367,28 +364,6 @@ public class ASConfig {
     builder.comment("How much to increase enchantment requirement per enchantment level.");
     ENCHANT_LEVEL_INCREASE = builder.defineInRange("enchantLevelIncrease", 1, 1, 100);
 
-    builder.comment("Use the attribute locks list to lock item usage based on their attributes.");
-    USE_ATTRIBUTE_LOCKS = builder.define("useAttributeLocks", true);
-
-    builder.comment(
-        "Skill requirements for attributes. Used if useAttributeLocks is true. Items affected by this will be overriden by the skill locks list above.",
-        "Format: attribute skill:level_required_per_attribute_level",
-        "Valid skills: vitality, endurance, strength, dexterity, mind, intelligence");
-    ATTRIBUTE_SKILL_LOCKS =
-        builder.defineList(
-            "attributeSkillLocks",
-            Arrays.asList(
-                "generic.attack_damage strength:0.5",
-                "generic.armor endurance:0.8",
-                "generic.attack_speed dexterity:2",
-                "generic.movement_speed dexterity:1",
-                "generic.armor_toughness vitality:1",
-                "ars_nouveau.perk.mana_regen mind:2",
-                "ars_nouveau.perk.spell_damage intelligence:0.5",
-                "ars_nouveau.perk.flat_max_mana mind:0.1",
-                "attack_range dexterity:2"),
-            obj -> true);
-
     builder.comment(
         "Attribute values under this number will be omitted from vitality skill locks.");
     VITALITY_OMIT = builder.defineInRange("vitalityOmit", 0.0, 0.0, 100.0);
@@ -435,7 +410,6 @@ public class ASConfig {
 
     deathReset = DEATH_RESET. get();
     effectDetriment = EFFECT_DETRIMENT.get();
-    useAttributeLocks = USE_ATTRIBUTE_LOCKS.get();
     startingCost = STARTING_COST.get();
     costIncrease = COST_INCREASE.get();
     enchantLevelIncrease = ENCHANT_LEVEL_INCREASE.get();
@@ -476,20 +450,6 @@ public class ASConfig {
       }
 
       enchantSkillLocks.put(entry[0], requirements);
-    }
-
-    for (String line : ATTRIBUTE_SKILL_LOCKS.get()) {
-      String[] entry = line.split(" ");
-      Requirement[] requirements = new Requirement[entry.length - 1];
-
-      for (int i = 1; i < entry.length; i++) {
-        String[] req = entry[i].split(":");
-
-        requirements[i - 1] =
-            new Requirement(Skill.valueOf(req[0].toUpperCase()), Double.parseDouble(req[1]));
-      }
-
-      attributeSkillLocks.put(entry[0], requirements);
     }
 
     for (String line : IGNORED.get()) {
@@ -639,10 +599,6 @@ public class ASConfig {
 
   public static boolean getWhetherEffectDetriment() {
     return effectDetriment;
-  }
-
-  public static boolean getIfUseAttributeLocks() {
-    return useAttributeLocks;
   }
 
   public static int getStartCost() {

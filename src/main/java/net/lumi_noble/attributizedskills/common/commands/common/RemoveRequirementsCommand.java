@@ -33,7 +33,7 @@ public class RemoveRequirementsCommand {
 
         String itemId = ForgeRegistries.ITEMS.getKey(itemStack.getItem()).toString();
         removeConfig(itemId);
-        context.getSource().sendSuccess(Component.translatable("command.remove_requirements.success", itemId), true);
+        context.getSource().sendSuccess(() -> Component.translatable("command.remove_requirements.success", itemId), true);
 
         return 1;
     }

@@ -24,7 +24,7 @@ public class AttributesEventHandler {
   public static void onPlayerUpdate(TickEvent.PlayerTickEvent event) {
     if (event.phase != TickEvent.Phase.END) return;
     if (event.player instanceof ServerPlayer player
-        && player.getLevel().getServer().getTickCount() % 20 == 0
+        && player.level().getServer().getTickCount() % 20 == 0
         && !player.isDeadOrDying()) {
       updateSkillsFromAttributes(player);
     }

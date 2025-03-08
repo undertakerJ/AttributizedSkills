@@ -58,7 +58,7 @@ public class RemoveSkillBonusCommand {
         if (removedEntry) {
             updateSkillBonuses(skill, currentList);
             ModNetworking.sendToServer(new RemoveAllBonusesPacket());
-            context.getSource().sendSuccess(Component.translatable("command.remove_bonus.success", attributeArg, skill.name()), true);
+            context.getSource().sendSuccess(() -> Component.translatable("command.remove_bonus.success", attributeArg, skill.name()), true);
             ASConfig.getConfig().save();
             ASConfig.load();
             return 1;

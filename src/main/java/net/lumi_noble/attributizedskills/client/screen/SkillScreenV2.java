@@ -11,7 +11,7 @@ import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -69,7 +69,9 @@ public class SkillScreenV2 extends Screen {
     }
 
     @Override
-    public void renderBackground(PoseStack poseStack) {
+    public void renderBackground(GuiGraphics guiGraphics) {
+        PoseStack poseStack = guiGraphics.pose();
+
         int skillWidth = 256;
         int skillHeight = 256;
 
@@ -97,33 +99,35 @@ public class SkillScreenV2 extends Screen {
         RenderSystem.setShader(GameRenderer::getPositionShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, SCREEN_TEXTURE);
-        super.renderBackground(poseStack);
-        GuiComponent.blit(
-                poseStack, x, y, 0, textureY, skillWidth, skillHeight, textureWidth, textureHeight);
-        font.draw(poseStack, levelText, (x + textureOriginOffset + 3) , y + 6, 0x969696);
+        super.renderBackground(guiGraphics);
+        guiGraphics.blit(
+                SCREEN_TEXTURE, x, y, 0, textureY, skillWidth, skillHeight, textureWidth, textureHeight);
+        guiGraphics.drawString(font, levelText, (x + textureOriginOffset + 3) , y + 6, 0x969696);
         poseStack.popPose();
-        font.draw(poseStack,
+        guiGraphics.drawString(font,
                 Component.translatable("ui.skills.limit", ASConfig.getMaxLevelTotal()).getString(),
                 x, y - 10, 0x313131);
 
-        font.draw(poseStack,
+        guiGraphics.drawString(font,
                 Component.translatable("ui.skills.hold_shift").getString(),
                 x, y - 20, 0x313131);
 
-        SkillButtonV2.drawOutlinedText(poseStack, "Tears: " + model.getTearPoints(), x + 250 - font.width("Tears: " + model.getTearPoints()), y + 6, 0x21F8F6);
+        SkillButtonV2.drawOutlinedText(guiGraphics, "Tears: " + model.getTearPoints(), x + 250 - font.width("Tears: " + model.getTearPoints()), y + 6, 0x21F8F6);
     }
 
-    @Override
-    public void render(PoseStack pPoseStack, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(pPoseStack);
-        super.render(pPoseStack, mouseX, mouseY, partialTicks);
 
-       renderBonusList(pPoseStack);
+    @Override
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground(guiGraphics);
+        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+
+       renderBonusList(guiGraphics);
     }
 
     private int bonusScrollOffset = 0;
 
-    private void renderBonusList(PoseStack stack) {
+    private void renderBonusList(GuiGraphics guiGraphics) {
+        PoseStack stack = guiGraphics.pose();
         Minecraft minecraft = Minecraft.getInstance();
         Font font = minecraft.font;
         int screenWidth = this.width;
@@ -212,13 +216,12 @@ public class SkillScreenV2 extends Screen {
         int drawY = y + 6;
         for (int i = bonusScrollOffset; i < totalLines && i < bonusScrollOffset + maxVisibleLines; i++) {
             MutableComponent comp = flattenedLines.get(i);
-            // Если строка является заголовком (например, заканчивается на ":") — отрисовываем без масштабирования
             if (comp.getString().endsWith(":")) {
-                font.draw(stack, comp, startX, drawY, 0xFFFFFF);
+                guiGraphics.drawString(font, comp, startX, drawY, 0xFFFFFF);
             } else {
                 stack.pushPose();
                 stack.scale(bonusTextScale, bonusTextScale, bonusTextScale);
-                SkillButtonV2.drawOutlinedText(stack, comp.getString(), (int)(startX / bonusTextScale), (int)(drawY / bonusTextScale), 0xAAAAAA);
+                SkillButtonV2.drawOutlinedText(guiGraphics, comp.getString(), (int)(startX / bonusTextScale), (int)(drawY / bonusTextScale), 0xAAAAAA);
                 stack.popPose();
             }
             drawY += scaledLineHeight;

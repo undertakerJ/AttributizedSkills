@@ -50,8 +50,8 @@ public class SetCommand {
 
     context
         .getSource()
-            .sendSuccess(
-                    Component.translatable("command.set_skill_level",
+            .sendSuccess(() ->
+                            Component.translatable("command.set_skill_level",
                             Component.translatable(skill.displayName),
                             level,
                             player.getName()

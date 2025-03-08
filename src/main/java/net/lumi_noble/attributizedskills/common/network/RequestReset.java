@@ -13,9 +13,6 @@ import net.minecraftforge.network.NetworkEvent;
 
 public class RequestReset {
 
-
-
-
 	public void handle(Supplier<NetworkEvent.Context> context) {
 		context.get().enqueueWork(() -> {
 			

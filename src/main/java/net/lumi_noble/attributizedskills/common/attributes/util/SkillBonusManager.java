@@ -15,7 +15,7 @@ import java.util.Map;
 public class SkillBonusManager {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || event.player.level.isClientSide()) return;
+        if (event.phase != TickEvent.Phase.END || event.player.level().isClientSide()) return;
         ServerPlayer player = (ServerPlayer) event.player;
         if(player.isDeadOrDying()) return;
         if (player.tickCount % 50 == 0) {

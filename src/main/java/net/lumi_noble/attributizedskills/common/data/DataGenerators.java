@@ -14,7 +14,7 @@ public class DataGenerators {
 		
 		DataGenerator generator = event.getGenerator();
 		
-		generator.addProvider(event.includeServer(), new AttributizedSkillsDungeonLoot(generator, AttributizedSkills.MOD_ID));
-		generator.addProvider(event.includeClient(), new AttributizedSkillsLang(generator, "en_us"));
+		generator.addProvider(event.includeServer(), new AttributizedSkillsDungeonLoot(event.getGenerator().getPackOutput(), AttributizedSkills.MOD_ID));
+		generator.addProvider(event.includeClient(), new AttributizedSkillsLang(event.getGenerator().getPackOutput(), "en_us"));
 	}
 }
