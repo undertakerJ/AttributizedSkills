@@ -8,6 +8,7 @@ import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.network.ModNetworking;
 import net.lumi_noble.attributizedskills.common.network.packets.RequestLevelUpPacket;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
@@ -156,20 +157,28 @@ public class SkillButtonV2 extends AbstractButton {
 
     }
 
-    @Override
-    public void onPress() {
-        if (underMaxTotal && !ASConfig.DISABLE_LEVEL_BUY.get()) {
-            SkillModel model = SkillModel.get();
-            int maxPointsToUse = Screen.hasShiftDown() ? 5 : 1;
-            int tearPoints = model.getTearPoints();
+  @Override
+  public void onPress() {
+    if (underMaxTotal && !ASConfig.DISABLE_LEVEL_BUY.get()) {
+      SkillModel model = SkillModel.get();
+      int maxPointsToUse = Screen.hasShiftDown() ? 5 : 1;
+      int tearPoints = model.getTearPoints();
+      int playerXP = Minecraft.getInstance().player != null ? Minecraft.getInstance().player.experienceLevel : 0;
 
-            boolean useTearPoints = (tearPoints >= maxPointsToUse);
-            ModNetworking.sendToServer(new RequestLevelUpPacket(skill, maxPointsToUse, useTearPoints));
-        }
+      boolean useTearPoints = (tearPoints >= maxPointsToUse);
+      int requiredXP = ASConfig.getStartCost() + ((model.getSkillLevel(skill) - 1) * ASConfig.getCostIncrease());
+
+      if (useTearPoints || playerXP >= requiredXP) {
+        ModNetworking.sendToServer(new RequestLevelUpPacket(skill, maxPointsToUse, useTearPoints));
+      } else {
+        Minecraft.getInstance().player.displayClientMessage(Component.literal("Not enough XP or Tear Points!").withStyle(ChatFormatting.RED), true);
+      }
     }
+  }
 
 
-    public static void drawOutlinedText(PoseStack poseStack, String text, int x, int y, int color) {
+
+  public static void drawOutlinedText(PoseStack poseStack, String text, int x, int y, int color) {
         Font font = Minecraft.getInstance().font;
         GuiComponent.drawString(poseStack, font, text, x + 1, y, 0);
         GuiComponent.drawString(poseStack, font, text, x - 1, y, 0);
