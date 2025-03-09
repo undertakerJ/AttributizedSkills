@@ -26,8 +26,6 @@ public class StatIconButton extends Button {
     private static final ResourceLocation STATS_ICON  = new ResourceLocation(AttributizedSkills.MOD_ID, "textures/gui/skill_icon_color.png");
     private static final ResourceLocation STATS_ICON_NO_COLOR  = new ResourceLocation(AttributizedSkills.MOD_ID, "textures/gui/skill_icon_no_color.png");
 
-
-
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         Minecraft minecraft = Minecraft.getInstance();
@@ -40,7 +38,14 @@ public class StatIconButton extends Button {
             this.setY(newY);
             this.active = true;
             this.visible = true;
-        } else if (currentScreen instanceof CreativeModeInventoryScreen creativeScreen) {
+            ResourceLocation texture = this.isMouseOver(mouseX, mouseY) ? STATS_ICON : STATS_ICON_NO_COLOR;
+            poseStack.pushPose();
+            guiGraphics.blit(texture, getX(), getY(), 0, 0, this.width, this.height, this.width, this.height);
+            poseStack.popPose();
+        }
+        else if (currentScreen instanceof CreativeModeInventoryScreen creativeScreen) {
+            this.active = false;
+            this.visible = false;
             if (creativeScreen.isInventoryOpen()) {
                 int newX = creativeScreen.getGuiLeft() + 125;
                 int newY = creativeScreen.getGuiTop() + 20;
@@ -48,24 +53,25 @@ public class StatIconButton extends Button {
                 this.setY(newY);
                 this.active = true;
                 this.visible = true;
-            } else {
-                this.active = false;
-                this.visible = false;
+                ResourceLocation texture = this.isMouseOver(mouseX, mouseY) ? STATS_ICON : STATS_ICON_NO_COLOR;
+                poseStack.pushPose();
+                guiGraphics.blit(texture, getX(), getY(), 0, 0, this.width, this.height, this.width, this.height);
+                poseStack.popPose();
             }
-        } else if (currentScreen instanceof CuriosScreen curiosScreen) {
+        }
+        else if (currentScreen instanceof CuriosScreen curiosScreen) {
             int newX = curiosScreen.getGuiLeft() + 77;
             int newY = curiosScreen.getGuiTop() + 44;
             this.setX(newX);
             this.setY(newY);
             this.active = true;
             this.visible = true;
+            ResourceLocation texture = this.isMouseOver(mouseX, mouseY) ? STATS_ICON : STATS_ICON_NO_COLOR;
+            poseStack.pushPose();
+            guiGraphics.blit(texture, getX(), getY(), 0, 0, this.width, this.height, this.width, this.height);
+            poseStack.popPose();
         }
 
-        ResourceLocation texture = this.isMouseOver(mouseX, mouseY) ? STATS_ICON : STATS_ICON_NO_COLOR;
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        poseStack.pushPose();
-        guiGraphics.blit(texture, getX(), getY(), 0, 0, this.width, this.height, this.width, this.height);
-        poseStack.popPose();
+
     }
 }
