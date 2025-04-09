@@ -58,7 +58,6 @@ public class AddSkillBonusCommand {
 
     private static int executeAdd(CommandContext<CommandSourceStack> context) {
         String skillArg = StringArgumentType.getString(context, "skill").toUpperCase();
-        // Получаем ResourceLocation из аргумента "attribute"
         ResourceLocation attrRL = ResourceLocationArgument.getId(context, "attribute");
         String attributeArg = attrRL.toString();
         double multiplier = DoubleArgumentType.getDouble(context, "multiplier");
@@ -99,7 +98,6 @@ public class AddSkillBonusCommand {
     }
 
     private static List<String> getBonusListForSkill(Skill skill) {
-        // Возвращаем список из соответствующего конфигурационного значения
         switch (skill) {
             case VITALITY:
                 return new ArrayList<>(ASConfig.VITALITY_SKILL_ATTRIBUTE_BONUSES.get());
@@ -119,7 +117,6 @@ public class AddSkillBonusCommand {
     }
 
     private static void updateSkillBonuses(Skill skill, List<String> updatedList) {
-        // Обновляем соответствующее конфигурационное значение
         switch (skill) {
             case VITALITY:
                 ASConfig.VITALITY_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
@@ -140,7 +137,6 @@ public class AddSkillBonusCommand {
                 ASConfig.INTELLIGENCE_SKILL_ATTRIBUTE_BONUSES.set(updatedList);
                 break;
         }
-        // Сохраняем и перечитываем конфиг
         ASConfig.getConfig().save();
         ASConfig.load();
     }

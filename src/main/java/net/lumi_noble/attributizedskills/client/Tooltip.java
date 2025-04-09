@@ -54,15 +54,7 @@ public class Tooltip {
                   .append(" - " + (int) requirement.getLevel())
                   .withStyle(color));
         }
-      } else if (ASConfig.getIfUseAttributeLocks()) {
-        addAttributeRestrictionTooltips(tooltips, EquipmentSlot.MAINHAND, itemStack, skillModel);
-        addAttributeRestrictionTooltips(tooltips, EquipmentSlot.OFFHAND, itemStack, skillModel);
-        addAttributeRestrictionTooltips(tooltips, EquipmentSlot.CHEST, itemStack, skillModel);
-        addAttributeRestrictionTooltips(tooltips, EquipmentSlot.FEET, itemStack, skillModel);
-        addAttributeRestrictionTooltips(tooltips, EquipmentSlot.HEAD, itemStack, skillModel);
-        addAttributeRestrictionTooltips(tooltips, EquipmentSlot.LEGS, itemStack, skillModel);
       }
-
       if (itemStack.isEnchanted()) {
         Map<Enchantment, Integer> enchants = EnchantmentHelper.getEnchantments(itemStack);
         Map<Requirement[], Integer> enchantRequirements = new HashMap<>();
@@ -109,37 +101,4 @@ public class Tooltip {
     }
   }
 
-  private void addAttributeRestrictionTooltips(
-      List<Component> tooltips, EquipmentSlot slot, ItemStack stack, SkillModel skillModel) {
-    Multimap<Attribute, AttributeModifier> attributeModifiers = stack.getAttributeModifiers(slot);
-
-    for (Attribute a : attributeModifiers.keys()) {
-
-      String attributeID = a.getDescriptionId().replaceAll("attribute.name.", "").trim();
-
-      Requirement[] attributeRequirements = ASConfig.getAttributeRequirements(attributeID);
-
-      if (attributeRequirements != null) {
-
-        double attributeValue = CalculateAttributeValue.get(a, attributeModifiers.get(a));
-
-        for (Requirement requirement : attributeRequirements) {
-          int finalAmount = (int) Math.round(requirement.getLevel() * attributeValue);
-
-          if (attributeValue <= ASConfig.getSkillOmitLevel(requirement.getSkill())) {
-            continue;
-          }
-
-          ChatFormatting color =
-              skillModel.getSkillLevel(requirement.getSkill()) >= finalAmount
-                  ? ChatFormatting.GREEN
-                  : ChatFormatting.RED;
-          tooltips.add(
-              Component.translatable(requirement.getSkill().displayName)
-                  .append(" " + (finalAmount))
-                  .withStyle(color));
-        }
-      }
-    }
-  }
 }

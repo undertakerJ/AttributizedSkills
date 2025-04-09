@@ -24,18 +24,16 @@ import java.util.UUID;
 public class SetCommand {
 
   public static LiteralArgumentBuilder<CommandSourceStack> register() {
-    return Commands.literal("set")
+    return Commands.literal("set_skill")
         .then(
             Commands.argument("player", EntityArgument.player())
                 .then(
                     Commands.argument("skill", EnumArgument.enumArgument(Skill.class))
                         .then(
                             Commands.argument(
-                                    "level", IntegerArgumentType.integer(1, ASConfig.getMaxLevel()))
+                                    "level", IntegerArgumentType.integer(1, 1000))
                                 .executes(SetCommand::execute))));
   }
-
-  // Execute Command
 
   private static int execute(CommandContext<CommandSourceStack> context)
       throws CommandSyntaxException {
@@ -51,7 +49,7 @@ public class SetCommand {
     context
         .getSource()
             .sendSuccess(
-                    Component.translatable("command.set_skill_level",
+                            Component.translatable("command.set_skill_level",
                             Component.translatable(skill.displayName),
                             level,
                             player.getName()

@@ -16,13 +16,11 @@ import net.minecraftforge.server.command.EnumArgument;
 public class GetCommand {
 	
     public static LiteralArgumentBuilder<CommandSourceStack> register() {
-        return Commands.literal("get")
+        return Commands.literal("get_skill")
             .then(Commands.argument("player", EntityArgument.player())
             .then(Commands.argument("skill", EnumArgument.enumArgument(Skill.class))
             .executes(GetCommand::execute)));
     }
-    
-    // Execute Command
     
     private static int execute(CommandContext<CommandSourceStack> context) throws CommandSyntaxException
     {
