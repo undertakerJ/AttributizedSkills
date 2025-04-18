@@ -1,5 +1,6 @@
 package net.lumi_noble.attributizedskills.common;
 
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import net.lumi_noble.attributizedskills.AttributizedSkills;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillProvider;
@@ -23,9 +24,12 @@ import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.ModList;
 
 public class EventHandler {
 
@@ -229,8 +233,11 @@ public class EventHandler {
     }
   }
 
-  public void enchantEvent(){
-
+  @SubscribeEvent
+  public void onServerAboutToStart(LevelEvent.Load event) {
+    if (ModList.get().isLoaded(Apotheosis.MODID)) {
+      ASConfig.loadApothRequirements();
+    }
   }
 
 }

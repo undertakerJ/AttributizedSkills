@@ -51,6 +51,11 @@ public class AttributizedSkillsLang extends LanguageProvider  {
 		add("tooltip.spell.requirements", "Spell Requirements");
 		add("tooltip.item.requirements", "Item Requirements");
 		add("tooltip.enchant.requirements", "Enchantment Requirements");
+		//Apotheosis Compat
+		add("command.add_apoth_req.success", "Set requirements for rarity: %1$s");
+		add("command.remove_apoth_req.error", "There no requirements for rarity: %1$s");
+		add("command.remove_apoth_req.success", "Removed requirements for rarity: %1$s");
+
 		// Attributes
 		add("attribute.attributizedskills.vitality", "Vitality");
 		add("attribute.attributizedskills.dexterity", "Dexterity");

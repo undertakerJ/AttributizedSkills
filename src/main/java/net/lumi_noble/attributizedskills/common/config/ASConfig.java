@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import net.lumi_noble.attributizedskills.common.attributes.util.AttributeBonus;
+import net.lumi_noble.attributizedskills.common.compat.ApothRarityRequirement;
 import net.lumi_noble.attributizedskills.common.compat.SpellRequirement;
 import net.lumi_noble.attributizedskills.common.item.TearAction;
 import net.lumi_noble.attributizedskills.common.skill.Requirement;
@@ -45,7 +45,12 @@ public class ASConfig {
   private static final ForgeConfigSpec.BooleanValue CREATIVE_HIDDEN;
 
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>> SPELL_REQUIREMENTS;
-  public static final Map<ResourceLocation, SpellRequirement> SPELL_REQUIREMENTS_MAP = new HashMap<>();
+  public static final Map<ResourceLocation, SpellRequirement> SPELL_REQUIREMENTS_MAP =
+      new ConcurrentHashMap<>();
+
+  public static final ForgeConfigSpec.ConfigValue<List<? extends String>> APOTH_RARITY_REQUIREMENTS;
+  public static final Map<ResourceLocation, ApothRarityRequirement> APOTH_RARITY_REQUIREMENTS_MAP =
+      new ConcurrentHashMap<>();
 
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>>
       VITALITY_SKILL_ATTRIBUTE_BONUSES;
@@ -62,11 +67,16 @@ public class ASConfig {
   public static final ForgeConfigSpec.ConfigValue<String> TEAR_ACTION;
   public static final Map<String, AttributeBonus> vitalityAttributeMultipliers =
       new ConcurrentHashMap<>();
-  public static final Map<String, AttributeBonus> enduranceAttributeMultipliers =  new ConcurrentHashMap<>();
-  public static final Map<String, AttributeBonus> mindAttributeMultipliers =  new ConcurrentHashMap<>();
-  public static final Map<String, AttributeBonus> intelligenceAttributeMultipliers =  new ConcurrentHashMap<>();
-  public static final Map<String, AttributeBonus> dexterityAttributeMultipliers =  new ConcurrentHashMap<>();
-  public static final Map<String, AttributeBonus> strengthAttributeMultipliers =  new ConcurrentHashMap<>();
+  public static final Map<String, AttributeBonus> enduranceAttributeMultipliers =
+      new ConcurrentHashMap<>();
+  public static final Map<String, AttributeBonus> mindAttributeMultipliers =
+      new ConcurrentHashMap<>();
+  public static final Map<String, AttributeBonus> intelligenceAttributeMultipliers =
+      new ConcurrentHashMap<>();
+  public static final Map<String, AttributeBonus> dexterityAttributeMultipliers =
+      new ConcurrentHashMap<>();
+  public static final Map<String, AttributeBonus> strengthAttributeMultipliers =
+      new ConcurrentHashMap<>();
   private static boolean deathReset;
   private static boolean effectDetriment;
   private static int startingCost;
@@ -94,15 +104,18 @@ public class ASConfig {
   static {
     ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
+    builder.comment("Apotheosis Rarity additional requirements.");
+    APOTH_RARITY_REQUIREMENTS = builder.defineList("apothRariryReq", List.of(), o -> true);
+
     builder.comment("Iron's Spells spell requirements.");
-    SPELL_REQUIREMENTS = builder.defineList("spell_requirements", List.of(
-    ), obj -> true);
+    SPELL_REQUIREMENTS = builder.defineList("spell_requirements", List.of(), obj -> true);
 
     builder.comment("Reset all skills to 1 when a player dies.");
     DEATH_RESET = builder.define("deathReset", false);
     DISABLE_LEVEL_BUY =
-            builder.comment("If true, disabling player from buying stats for xp.")
-                    .define("disableLevelBuy", false);
+        builder
+            .comment("If true, disabling player from buying stats for xp.")
+            .define("disableLevelBuy", false);
     TEAR_ACTION =
         builder
             .comment("Changes \"Larval Tear\" mode")
@@ -408,7 +421,7 @@ public class ASConfig {
 
   public static void load() {
 
-    deathReset = DEATH_RESET. get();
+    deathReset = DEATH_RESET.get();
     effectDetriment = EFFECT_DETRIMENT.get();
     startingCost = STARTING_COST.get();
     costIncrease = COST_INCREASE.get();
@@ -465,7 +478,8 @@ public class ASConfig {
           AttributeModifier.Operation op = parseOperation(parts[3]);
           vitalityAttributeMultipliers.put(attrKey, new AttributeBonus(multiplier, op));
         } catch (NumberFormatException e) {
-          System.err.println("Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
+          System.err.println(
+              "Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
         }
       }
     }
@@ -479,7 +493,8 @@ public class ASConfig {
           AttributeModifier.Operation op = parseOperation(parts[3]);
           strengthAttributeMultipliers.put(attrKey, new AttributeBonus(multiplier, op));
         } catch (NumberFormatException e) {
-          System.err.println("Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
+          System.err.println(
+              "Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
         }
       }
     }
@@ -493,7 +508,8 @@ public class ASConfig {
           AttributeModifier.Operation op = parseOperation(parts[3]);
           dexterityAttributeMultipliers.put(attrKey, new AttributeBonus(multiplier, op));
         } catch (NumberFormatException e) {
-          System.err.println("Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
+          System.err.println(
+              "Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
         }
       }
     }
@@ -507,7 +523,8 @@ public class ASConfig {
           AttributeModifier.Operation op = parseOperation(parts[3]);
           enduranceAttributeMultipliers.put(attrKey, new AttributeBonus(multiplier, op));
         } catch (NumberFormatException e) {
-          System.err.println("Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
+          System.err.println(
+              "Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
         }
       }
     }
@@ -521,7 +538,8 @@ public class ASConfig {
           AttributeModifier.Operation op = parseOperation(parts[3]);
           intelligenceAttributeMultipliers.put(attrKey, new AttributeBonus(multiplier, op));
         } catch (NumberFormatException e) {
-          System.err.println("Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
+          System.err.println(
+              "Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
         }
       }
     }
@@ -535,7 +553,8 @@ public class ASConfig {
           AttributeModifier.Operation op = parseOperation(parts[3]);
           mindAttributeMultipliers.put(attrKey, new AttributeBonus(multiplier, op));
         } catch (NumberFormatException e) {
-          System.err.println("Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
+          System.err.println(
+              "Неверное значение множителя для атрибута " + attrKey + ": " + parts[2]);
         }
       }
     }
@@ -544,15 +563,17 @@ public class ASConfig {
   private static AttributeModifier.Operation parseOperation(String s) {
     s = s.toLowerCase();
     switch (s) {
-      case "addition": return AttributeModifier.Operation.ADDITION;
-      case "multiply_base": return AttributeModifier.Operation.MULTIPLY_BASE;
-      case "multiply_total": return AttributeModifier.Operation.MULTIPLY_TOTAL;
+      case "addition":
+        return AttributeModifier.Operation.ADDITION;
+      case "multiply_base":
+        return AttributeModifier.Operation.MULTIPLY_BASE;
+      case "multiply_total":
+        return AttributeModifier.Operation.MULTIPLY_TOTAL;
       default:
         System.err.println("Неизвестная операция: " + s + ". Используется addition по умолчанию.");
         return AttributeModifier.Operation.ADDITION;
     }
   }
-
 
   public static void loadClient() {
 
@@ -591,7 +612,31 @@ public class ASConfig {
     }
   }
 
+  public static void loadApothRequirements() {
+    APOTH_RARITY_REQUIREMENTS_MAP.clear();
+    for (String entry : APOTH_RARITY_REQUIREMENTS.get()) {
+      String[] tokens = entry.split("\\s+");
+      if (tokens.length < 2) continue;
 
+      ResourceLocation rarityId = new ResourceLocation(tokens[0]);
+      Map<Skill, Integer> reqs = new HashMap<>();
+
+      for (int i = 1; i < tokens.length; i++) {
+        String[] parts = tokens[i].split(":");
+        if (parts.length != 2) continue;
+        String key = parts[0].toLowerCase();
+        int value = Integer.parseInt(parts[1]);
+        try {
+          Skill skill = Skill.valueOf(key.toUpperCase());
+          reqs.put(skill, value);
+        } catch (IllegalArgumentException e) {
+          System.err.println("Unknown skill in apoth requirements: " + key);
+        }
+      }
+
+      APOTH_RARITY_REQUIREMENTS_MAP.put(rarityId, new ApothRarityRequirement(reqs));
+    }
+  }
 
   public static boolean getDeathReset() {
     return deathReset;

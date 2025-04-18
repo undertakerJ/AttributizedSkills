@@ -1,18 +1,14 @@
 package net.lumi_noble.attributizedskills.common.compat;
 
-import io.redspace.ironsspellbooks.IronsSpellbooks;
 import io.redspace.ironsspellbooks.api.events.SpellPreCastEvent;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import io.redspace.ironsspellbooks.api.spells.AbstractSpell;
 import io.redspace.ironsspellbooks.api.spells.ISpellContainer;
 import io.redspace.ironsspellbooks.api.spells.SpellData;
-import net.lumi_noble.attributizedskills.AttributizedSkills;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
 import net.lumi_noble.attributizedskills.common.config.ASConfig;
-import net.lumi_noble.attributizedskills.common.skill.Requirement;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -20,13 +16,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
 
 public class IronSpellsCompat {
 

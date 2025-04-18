@@ -23,7 +23,6 @@ public class CuriosCompat {
                 
                 if (!SkillModel.get(player).canUseItem(player, item))
                 {
-                	// curios are always dropped.
                     player.drop(item.copy(), false);
                     item.setCount(0);
                 }

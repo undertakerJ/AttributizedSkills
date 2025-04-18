@@ -1,6 +1,7 @@
 package net.lumi_noble.attributizedskills.common.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import dev.shadowsoffire.apotheosis.Apotheosis;
 import io.redspace.ironsspellbooks.IronsSpellbooks;
 import net.lumi_noble.attributizedskills.common.commands.common.*;
 import net.minecraft.commands.CommandSourceStack;
@@ -38,5 +39,15 @@ public class ModCommands {
                   .then(AddSpellRequirementCommand.register())
                       .then(RemoveSpellRequirementCommand.register()));
     }
+    if (ModList.get().isLoaded(Apotheosis.MODID)) {
+      event
+          .getDispatcher()
+          .register(
+              LiteralArgumentBuilder.<CommandSourceStack>literal("attributized")
+                  .requires(source -> source.hasPermission(2))
+                  .then(AddApothRequirementCommand.register())
+                      .then(RemoveApothRequirementCommand.register()));
+    }
+
   }
 }
