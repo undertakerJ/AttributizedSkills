@@ -23,9 +23,12 @@ import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
+import net.minecraftforge.fml.ModList;
+import shadows.apotheosis.Apotheosis;
 
 public class EventHandler {
 
@@ -229,8 +232,11 @@ public class EventHandler {
     }
   }
 
-  public void enchantEvent(){
-
+  @SubscribeEvent
+  public void onServerAboutToStart(LevelEvent.Load event) {
+    if (ModList.get().isLoaded(Apotheosis.MODID)) {
+      ASConfig.loadApothRequirements();
+    }
   }
 
 }

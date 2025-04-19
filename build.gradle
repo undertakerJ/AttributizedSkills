@@ -131,12 +131,16 @@ dependencies {
     implementation fg.deobf("curse.maven:max-health-fix-492246:4658481")
     implementation fg.deobf("curse.maven:attributefix-280510:5126457")
     implementation fg.deobf("curse.maven:item-production-lib-950401:5114035")
-    implementation fg.deobf("curse.maven:passive-skill-tree-850298:5729406")
+    //implementation fg.deobf("curse.maven:passive-skill-tree-850298:5729406")
 
     implementation fg.deobf("io.redspace.ironsspellbooks:irons_spellbooks:${irons_spells_version}")
     implementation fg.deobf("curse.maven:caelus-308989:3929284")
     implementation fg.deobf("curse.maven:playeranimator-658587:4418149")
     implementation fg.deobf("curse.maven:geckolib-388172:4407241")
+
+    implementation fg.deobf("curse.maven:apotheosis-313970:5753172")
+    implementation fg.deobf("curse.maven:patchouli-306770:4031402")
+    implementation fg.deobf("curse.maven:placebo-283644:6274259")
 
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }

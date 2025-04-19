@@ -7,6 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
+import shadows.apotheosis.Apotheosis;
 
 public class ModCommands {
 
@@ -37,6 +38,15 @@ public class ModCommands {
                   .requires(source -> source.hasPermission(2))
                   .then(AddSpellRequirementCommand.register())
                       .then(RemoveSpellRequirementCommand.register()));
+    }
+    if (ModList.get().isLoaded(Apotheosis.MODID)) {
+      event
+              .getDispatcher()
+              .register(
+                      LiteralArgumentBuilder.<CommandSourceStack>literal("attributized")
+                              .requires(source -> source.hasPermission(2))
+                              .then(AddApothRequirementCommand.register())
+                              .then(RemoveApothRequirementCommand.register()));
     }
   }
 }

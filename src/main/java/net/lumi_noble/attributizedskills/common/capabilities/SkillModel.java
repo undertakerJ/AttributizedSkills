@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import net.lumi_noble.attributizedskills.common.attributes.ModAttributes;
+import net.lumi_noble.attributizedskills.common.compat.ApothRarityRequirement;
 import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Requirement;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
@@ -17,6 +18,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -32,7 +34,11 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
+import shadows.apotheosis.Apotheosis;
+import shadows.apotheosis.adventure.affix.AffixHelper;
+import shadows.apotheosis.adventure.loot.LootRarity;
 
 import static net.lumi_noble.attributizedskills.common.attributes.ModAttributes.getModifierUUIDForSkill;
 import static net.lumi_noble.attributizedskills.common.commands.common.SetCommand.getAttributeForSkill;
@@ -112,132 +118,116 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 	}
 
 	public boolean canUseItemInSlot(Player player, ItemStack itemStack, EquipmentSlot slot) {
-		
+
 		ResourceLocation itemLoc = ForgeRegistries.ITEMS.getKey(itemStack.getItem());
 
 		if (isBlacklisted(itemLoc)) {
 			return true;
 		}
 
-		Requirement[] requirements = ASConfig.getItemRequirements(itemLoc);
+		Map<Skill, Double> totalRequirements = new HashMap<>();
 
-		if (requirements != null) {
-			for (Requirement requirement : requirements) {
-
-				if (getSkillLevel(requirement.getSkill()) < requirement.getLevel()) {
-
-					if (player instanceof ServerPlayer) {
-						displayUnmetRequirementMessage((ServerPlayer) player);
-					}
-
-					return false;
-				}
+		Requirement[] baseReqs = ASConfig.getItemRequirements(itemLoc);
+		if (baseReqs != null) {
+			for (Requirement req : baseReqs) {
+				totalRequirements.merge(req.getSkill(), req.getLevel(), Double::sum);
 			}
 		}
 
-		else if (ASConfig.getIfUseAttributeLocks()) {
-
-			Multimap<Attribute, AttributeModifier> attributeModifiers = itemStack.getAttributeModifiers(slot);
-
-			for (Attribute a : attributeModifiers.keys()) {
-				
-				// for vanilla attributes
-				String attributeID = a.getDescriptionId().replaceAll("attribute.name.", "").trim();
-
-				Requirement[] attributeRequirements = ASConfig.getAttributeRequirements(attributeID);
-
-				if (attributeRequirements != null) {
-
-					double attributeValue = CalculateAttributeValue.get(a, attributeModifiers.get(a));
-
-					for (Requirement requirement : attributeRequirements) {
-						int finalAmount = (int) Math.round(requirement.getLevel() * attributeValue);
-						// if item is omitted
-						if (attributeValue <= ASConfig.getSkillOmitLevel(requirement.getSkill())) {
-							continue;
-						}
-
-						if (!(SkillModel.get(player).getSkillLevel(requirement.getSkill()) >= finalAmount)) {
-							
-							if (player instanceof ServerPlayer) {
-									displayUnmetRequirementMessage(slot, (ServerPlayer) player);
-
-							}
-							
-							return false;
+		if (ModList.get().isLoaded(Apotheosis.MODID) && player.level instanceof ServerLevel) {
+			try {
+				LootRarity rarityHolder = AffixHelper.getRarity(itemStack);
+				if (rarityHolder != null) {
+					ResourceLocation rarityId = new ResourceLocation(rarityHolder.id());
+					ApothRarityRequirement apothReq = ASConfig.APOTH_RARITY_REQUIREMENTS_MAP.get(rarityId);
+					if (apothReq != null) {
+						for (Map.Entry<Skill, Integer> entry : apothReq.getBaseRequirements().entrySet()) {
+							totalRequirements.merge(entry.getKey(), (double) entry.getValue(), Double::sum);
 						}
 					}
 				}
-			}
+			} catch (Exception ignored) {}
 		}
+
 
 		if (itemStack.isEnchanted()) {
 			Map<Enchantment, Integer> enchants = EnchantmentHelper.getEnchantments(itemStack);
-			Map<Requirement[], Integer> enchantRequirements = new HashMap<>();
-			
-			if (!enchants.isEmpty()) {
-				
-				// collect requirements for each enchantment on the item.
-				for (Enchantment enchant : enchants.keySet()) {
-					
-					// only replace requirements if enchant level is higher
-					int enchantLevel = enchants.get(enchant);
-					Integer oldValue = enchantRequirements.put(ASConfig.getEnchantmentRequirements(ForgeRegistries.ENCHANTMENTS.getKey(enchant)), enchantLevel);
-					
-					if (oldValue != null && oldValue.intValue() > enchantLevel) {
-						enchantRequirements.put(ASConfig.getEnchantmentRequirements(ForgeRegistries.ENCHANTMENTS.getKey(enchant)), oldValue);
-					}
-				}
 
-				if (!enchantRequirements.isEmpty() && enchantRequirements != null) {
-					for (Requirement[] requirementsPerEnchant : enchantRequirements.keySet()) {
-						if (requirementsPerEnchant != null) {
-							for (Requirement enchantRequirement : requirementsPerEnchant) {
-								
-								// check if player can use enchanted item
-								double levelRequirement = enchantRequirement.getLevel();
-								int enchantLevel = enchantRequirements.get(requirementsPerEnchant);
-								
-								double finalValue = enchantLevel == 1 ? levelRequirement : levelRequirement + (enchantLevel * ASConfig.getEnchantmentRequirementIncrease());
-								
-								if (!(SkillModel.get(player).getSkillLevel(enchantRequirement.getSkill()) >= finalValue)) {
-									
-									if (player instanceof ServerPlayer) {
-										displayUnmetRequirementMessage(slot, (ServerPlayer) player);
-									}
-									
-									return false;
-								}
-							}
-						}
+			for (Map.Entry<Enchantment, Integer> enchantEntry : enchants.entrySet()) {
+				Enchantment enchant = enchantEntry.getKey();
+				int enchantLevel = enchantEntry.getValue();
+
+				Requirement[] enchantReqs = ASConfig.getEnchantmentRequirements(ForgeRegistries.ENCHANTMENTS.getKey(enchant));
+				if (enchantReqs != null) {
+					for (Requirement req : enchantReqs) {
+						double baseLevel = req.getLevel();
+						double finalLevel = (enchantLevel == 1)
+								? baseLevel
+								: baseLevel + (enchantLevel * ASConfig.getEnchantmentRequirementIncrease());
+
+						totalRequirements.merge(req.getSkill(), finalLevel, Double::sum);
 					}
 				}
 			}
 		}
-		
+
+		for (Map.Entry<Skill, Double> entry : totalRequirements.entrySet()) {
+			Skill skill = entry.getKey();
+			double required = entry.getValue();
+			int actual = getSkillLevel(skill);
+
+			if (actual < required) {
+				if (player instanceof ServerPlayer serverPlayer) {
+					displayUnmetRequirementMessage(slot, serverPlayer);
+				}
+				return false;
+			}
+		}
+
 		return true;
 	}
 
 	private boolean canUse(Player player, ResourceLocation resource) {
-		
-		// check if blacklisted
-		if (isBlacklisted(resource))  {
+		if (isBlacklisted(resource)) {
 			return true;
 		}
 
-		Requirement[] requirements = ASConfig.getItemRequirements(resource);
+		Map<Skill, Integer> totalRequirements = new HashMap<>();
 
-		if (requirements != null) {
-			for (Requirement requirement : requirements) {
+		Requirement[] baseReqs = ASConfig.getItemRequirements(resource);
+		if (baseReqs != null) {
+			for (Requirement req : baseReqs) {
+				totalRequirements.merge(req.getSkill(), (int) req.getLevel(), Integer::sum);
+			}
+		}
 
-				if (getSkillLevel(requirement.getSkill()) < requirement.getLevel()) {
 
-					if (player instanceof ServerPlayer) {
-						displayUnmetRequirementMessage((ServerPlayer) player);
+		if (ModList.get().isLoaded(Apotheosis.MODID) && player.level instanceof ServerLevel) {
+			ItemStack heldItem = player.getMainHandItem();
+			if (!heldItem.isEmpty()) {
+				try {
+					LootRarity rarity = AffixHelper.getRarity(heldItem);
+					if (rarity != null) {
+						ResourceLocation rarityId = new ResourceLocation(rarity.id());
+						ApothRarityRequirement apothReq = ASConfig.APOTH_RARITY_REQUIREMENTS_MAP.get(rarityId);
+						if (apothReq != null) {
+							for (Map.Entry<Skill, Integer> entry : apothReq.getBaseRequirements().entrySet()) {
+								totalRequirements.merge(entry.getKey(), entry.getValue(), Integer::sum);
+							}
+						}
 					}
+				} catch (Exception ignored) {}
+			}
+		}
 
-					return false;
+		for (Map.Entry<Skill, Integer> entry : totalRequirements.entrySet()) {
+			Skill skill = entry.getKey();
+			int requiredLevel = entry.getValue();
+			if (getSkillLevel(skill) < requiredLevel) {
+				if (player instanceof ServerPlayer serverPlayer) {
+					displayUnmetRequirementMessage(serverPlayer);
 				}
+				return false;
 			}
 		}
 
@@ -279,30 +269,6 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 				.orElseThrow(() -> new IllegalArgumentException("Player does not have a Skill Model"));
 	}
 
-	public void copyForRespawns(SkillModel oldSkill, ServerPlayer oldPlayer) {
-		this.deserializeNBT(oldSkill.serializeNBT()); // Копируем все данные
-
-		for (Skill skill : Skill.values()) {
-			UUID modifierUUID = getModifierUUIDForSkill(skill);
-			Attribute attribute = getAttributeForSkill(skill);
-
-			if (attribute != null) {
-				AttributeInstance instance = oldPlayer.getAttribute(attribute);
-
-				if (instance == null || instance.getModifier(modifierUUID) == null) {
-					this.setSkillLevel(skill, 1, null);
-
-				}
-			}
-		}
-
-		this.updateTotalLevel(); // Пересчитываем общий уровень
-	}
-
-
-	public void copyForRespawn(SkillModel oldStore) {
-		this.deserializeNBT(oldStore.serializeNBT());
-	}
 
 	public static boolean isBlacklisted(ResourceLocation loc) {
 		return ASConfig.getBlacklist().contains(loc.toString());

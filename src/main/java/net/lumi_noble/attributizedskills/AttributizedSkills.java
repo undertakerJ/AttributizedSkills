@@ -49,7 +49,8 @@ public class AttributizedSkills {
       ITEMS.register("tear_of_the_goddess", TearOfTheGoddessItem::new);
 
   public AttributizedSkills() {
-    IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+      //noinspection removal
+      IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
     AttributizedSkillsEffects.MOB_EFFECTS.register(modEventBus);
     ITEMS.register(modEventBus);
     modEventBus.addListener(this::commonSetup);

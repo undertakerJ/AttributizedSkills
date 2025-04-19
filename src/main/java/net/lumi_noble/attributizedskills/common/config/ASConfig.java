@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.lumi_noble.attributizedskills.common.attributes.util.AttributeBonus;
+import net.lumi_noble.attributizedskills.common.compat.ApothRarityRequirement;
 import net.lumi_noble.attributizedskills.common.compat.SpellRequirement;
 import net.lumi_noble.attributizedskills.common.item.TearAction;
 import net.lumi_noble.attributizedskills.common.skill.Requirement;
@@ -47,7 +48,12 @@ public class ASConfig {
   private static final ForgeConfigSpec.BooleanValue CREATIVE_HIDDEN;
 
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>> SPELL_REQUIREMENTS;
-  public static final Map<ResourceLocation, SpellRequirement> SPELL_REQUIREMENTS_MAP = new HashMap<>();
+  public static final Map<ResourceLocation, SpellRequirement> SPELL_REQUIREMENTS_MAP =
+          new ConcurrentHashMap<>();
+
+  public static final ForgeConfigSpec.ConfigValue<List<? extends String>> APOTH_RARITY_REQUIREMENTS;
+  public static final Map<ResourceLocation, ApothRarityRequirement> APOTH_RARITY_REQUIREMENTS_MAP =
+          new ConcurrentHashMap<>();
 
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>>
       VITALITY_SKILL_ATTRIBUTE_BONUSES;
@@ -96,6 +102,9 @@ public class ASConfig {
 
   static {
     ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+
+    builder.comment("Apotheosis Rarity additional requirements.");
+    APOTH_RARITY_REQUIREMENTS = builder.defineList("apothRariryReq", List.of(), o -> true);
 
     builder.comment("Iron's Spells spell requirements.");
     SPELL_REQUIREMENTS = builder.defineList("spell_requirements", List.of(
@@ -630,7 +639,31 @@ public class ASConfig {
       SPELL_REQUIREMENTS_MAP.put(spellId, new SpellRequirement(reqs, perLevelIncrement));
     }
   }
+  public static void loadApothRequirements() {
+    APOTH_RARITY_REQUIREMENTS_MAP.clear();
+    for (String entry : APOTH_RARITY_REQUIREMENTS.get()) {
+      String[] tokens = entry.split("\\s+");
+      if (tokens.length < 2) continue;
 
+      ResourceLocation rarityId = new ResourceLocation(tokens[0]);
+      Map<Skill, Integer> reqs = new HashMap<>();
+
+      for (int i = 1; i < tokens.length; i++) {
+        String[] parts = tokens[i].split(":");
+        if (parts.length != 2) continue;
+        String key = parts[0].toLowerCase();
+        int value = Integer.parseInt(parts[1]);
+        try {
+          Skill skill = Skill.valueOf(key.toUpperCase());
+          reqs.put(skill, value);
+        } catch (IllegalArgumentException e) {
+          System.err.println("Unknown skill in apoth requirements: " + key);
+        }
+      }
+
+      APOTH_RARITY_REQUIREMENTS_MAP.put(rarityId, new ApothRarityRequirement(reqs));
+    }
+  }
 
 
   public static boolean getDeathReset() {
