@@ -1,8 +1,6 @@
 package net.lumi_noble.attributizedskills.common.compat;
 
-import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 

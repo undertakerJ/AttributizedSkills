@@ -38,107 +38,88 @@ public class SkillButtonV2 extends AbstractButton {
   @Override
   public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
     PoseStack stack = guiGraphics.pose();
-    int x = getX();
-    int y = getY();
+    int x = getX(), y = getY();
+    Minecraft mc = Minecraft.getInstance();
+    SkillModel model = SkillModel.get();
+    int level       = model.getSkillLevel(skill);
+    int maxLevel    = ASConfig.getMaxLevel();
+    int maxTotal    = ASConfig.getMaxLevelTotal();
+    int tearPoints  = model.getTearPoints();
+    int totalLevel  = model.getTotalLevel();
+
+    // определяем, можем ли вообще ещё тратить очки на *этот* скилл:
+    boolean underIndividual = level < maxLevel;
+    boolean underTotal      = totalLevel < maxTotal;
+    boolean canLevel        = underIndividual && underTotal && !ASConfig.DISABLE_LEVEL_BUY.get();
+
+    // если мышь не над кнопкой — сбрасываем pressed
     if (!this.isMouseOver(mouseX, mouseY)) {
       this.pressed = false;
     }
-    Minecraft minecraft = Minecraft.getInstance();
-    RenderSystem.setShaderTexture(
-        0, TEXTURE);
-    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-    SkillModel model = SkillModel.get();
-    int level = model.getSkillLevel(skill);
-    int maxLevel = ASConfig.getMaxLevel();
-    int tearPoints = model.getTearPoints();
+    // background
+    RenderSystem.setShaderTexture(0, TEXTURE);
+    RenderSystem.setShaderColor(1,1,1,1);
 
-    if (!model.underMaxTotal()) {
-      underMaxTotal = false;
-    }
-
-    int textureX = 176;
-
-    int textureY = 0;
-    if (level == maxLevel) {
-      textureY = 96;
-    } else if (pressed && !ASConfig.DISABLE_LEVEL_BUY.get()) {
-      textureY = 32;
-    } else if (this.isMouseOver(mouseX, mouseY)) {
-      textureY = 64;
+    int texY;
+    if (!underTotal) {
+      // суммарный лимит исчерпан — "серый"
+      texY = 96;
+    } else if (level >= maxLevel) {
+      // индивидуальный лимит — "серый"
+      texY = 96;
+    } else if (pressed && canLevel) {
+      texY = 32;
+    } else if (this.isMouseOver(mouseX, mouseY) && canLevel) {
+      texY = 64;
     } else {
-      textureY = 0;
+      texY = 0;
     }
 
-    guiGraphics.blit(
-            TEXTURE,
-        x,
-        y,
-        textureX,
-        textureY,
-        width,
-        height);
+    guiGraphics.blit(TEXTURE, x, y, 176, texY, width, height);
 
-    int u = ((int) Math.ceil((double) level * 4 / maxLevel) - 1) * 16 + 176;
+    // icon
+    int u = ((int)Math.ceil((double)level * 4 / maxLevel) - 1) * 16 + 176;
     int v = skill.index * 16 + 128;
     stack.pushPose();
-    float scale1 = 1.1f;
-    stack.scale(scale1, scale1, scale1);
-    guiGraphics.blit(
-            TEXTURE,
-        (int) ((x + 6) / scale1),
-        (int) ((y + 8) / scale1),
-        u,
-        v,
-        16,
-        16);
+    stack.scale(1.1f, 1.1f, 1);
+    guiGraphics.blit(TEXTURE, (int)((x+6)/1.1), (int)((y+8)/1.1), u, v, 16, 16);
     stack.popPose();
 
     String skillName = Component.translatable(skill.displayName).getString();
-    int skillTextWidth = minecraft.font.width(skillName);
-    int centeredSkillX = x + (width / 2) - (skillTextWidth / 2);
-
-    float scale = 0.90F;
-
     stack.pushPose();
-    stack.scale(scale, scale, scale);
-    drawOutlinedText(
-        guiGraphics,
-        skillName,
-        (int) (centeredSkillX / scale) + 12,
-        (int) ((y + 7) / scale),
-        0xFFFFFF);
+    stack.scale(0.9f, 0.9f, 1);
+    int nameX = (int)((x + width/2f - mc.font.width(skillName)/2f) / 0.9f) + 12;
+    int nameY = (int)((y + 7)/0.9f);
+    drawOutlinedText(guiGraphics, skillName, nameX, nameY, 0xFFFFFF);
     stack.popPose();
-    String levelText = level + "/" + maxLevel;
-    int levelTextWidth = minecraft.font.width(levelText);
-    int centeredLevelX = x + (width / 2) - (levelTextWidth / 2);
-    if (this.isMouseOver(mouseX, mouseY) && level < maxLevel && !ASConfig.DISABLE_LEVEL_BUY.get()) {
-      int numLevels = Screen.hasShiftDown() ? 5 : 1;
 
-      if (tearPoints >= numLevels) {
-        String costText = numLevels == 1 ? "1 Tear" : numLevels + " Tears";
-        int costColor = 0x21F8F6;
-        int costTextWidth = minecraft.font.width(costText);
-        int centeredCostX = x + (width / 2) - (costTextWidth / 2);
-        drawOutlinedText(guiGraphics, costText, centeredCostX + 8, y + 18, costColor);
+    if (this.isMouseOver(mouseX, mouseY) && canLevel) {
+      int amt = Screen.hasShiftDown() ? 5 : 1;
+      if (tearPoints >= amt) {
+        String cost = amt == 1 ? "1 Tear" : amt + " Tears";
+        int cx = x + width/2 - mc.font.width(cost)/2 + 8;
+        drawOutlinedText(guiGraphics, cost, cx, y+18, 0x21F8F6);
       } else {
-        int totalCost = 0;
-        for (int i = 0; i < numLevels && (level + i) < maxLevel; i++) {
-          totalCost += ASConfig.getStartCost() + ((level + i) - 1) * ASConfig.getCostIncrease();
+        int levelsToBuy = Math.min(amt, maxLevel - level);
+        int costXP = 0;
+        for (int i = 0; i < levelsToBuy; i++) {
+          costXP += ASConfig.getStartCost() + ((level + i) - 1)*ASConfig.getCostIncrease();
         }
-        int costColor =
-            (minecraft.player.experienceLevel >= totalCost && model.underMaxTotal())
-                ? 0x7EFC20
-                : 0xFC5454;
-        String costText = totalCost + " levels";
-        int costTextWidth = minecraft.font.width(costText);
-        int centeredCostX = x + (width / 2) - (costTextWidth / 2);
-        drawOutlinedText(guiGraphics, costText, centeredCostX + 8, y + 18, costColor);
+        boolean enoughXP   = mc.player.experienceLevel >= costXP;
+        boolean staysUnder = totalLevel + levelsToBuy <= maxTotal;
+        int color = (enoughXP && staysUnder) ? 0x7EFC20 : 0xFC5454;
+        String cost = costXP + " levels";
+        int cx = x + width/2 - mc.font.width(cost)/2 + 8;
+        drawOutlinedText(guiGraphics, cost, cx, y+18, color);
       }
     } else {
-      drawOutlinedText(guiGraphics, levelText, centeredLevelX + 8, y + 18, 0xBEBEBE);
+      String lvlText = level + "/" + maxLevel;
+      int cx = x + width/2 - mc.font.width(lvlText)/2 + 8;
+      drawOutlinedText(guiGraphics, lvlText, cx, y+18, 0xBEBEBE);
     }
   }
+
 
   @Override
   public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -183,22 +164,33 @@ public class SkillButtonV2 extends AbstractButton {
 
   @Override
   public void onPress() {
-    if (underMaxTotal && !ASConfig.DISABLE_LEVEL_BUY.get()) {
-      SkillModel model = SkillModel.get();
-      int maxPointsToUse = Screen.hasShiftDown() ? 5 : 1;
-      int tearPoints = model.getTearPoints();
-      int playerXP = Minecraft.getInstance().player != null ? Minecraft.getInstance().player.experienceLevel : 0;
+    SkillModel model = SkillModel.get();
+    int level      = model.getSkillLevel(skill);
+    int maxLevel   = ASConfig.getMaxLevel();
+    int maxTotal   = ASConfig.getMaxLevelTotal();
+    int totalLevel = model.getTotalLevel();
+    int amt        = Screen.hasShiftDown() ? 5 : 1;
 
-      boolean useTearPoints = (tearPoints >= maxPointsToUse);
-      int requiredXP = ASConfig.getStartCost() + ((model.getSkillLevel(skill) - 1) * ASConfig.getCostIncrease());
-      
-      if (useTearPoints || playerXP >= requiredXP) {
-        ModNetworking.sendToServer(new RequestLevelUpPacket(skill, maxPointsToUse, useTearPoints));
-      } else {
-        Minecraft.getInstance().player.displayClientMessage(Component.literal("Not enough XP or Tear Points!").withStyle(ChatFormatting.RED), true);
-      }
+    int realAmt = Math.min(amt, maxLevel - level);
+    if (realAmt <= 0 || totalLevel + realAmt > maxTotal) {
+      Minecraft.getInstance().player.displayClientMessage(
+              Component.literal("Cannot level up any further!").withStyle(ChatFormatting.RED), true);
+      return;
     }
+
+    int tP = model.getTearPoints();
+    boolean useTP = tP >= realAmt;
+    int neededXP = ASConfig.getStartCost() + ((level - 1) * ASConfig.getCostIncrease());
+
+    if (!useTP && Minecraft.getInstance().player.experienceLevel < neededXP) {
+      Minecraft.getInstance().player.displayClientMessage(
+              Component.literal("Not enough XP or Tear Points!").withStyle(ChatFormatting.RED), true);
+      return;
+    }
+
+    ModNetworking.sendToServer(new RequestLevelUpPacket(skill, realAmt, useTP));
   }
+
 
 
   public static void drawOutlinedText(

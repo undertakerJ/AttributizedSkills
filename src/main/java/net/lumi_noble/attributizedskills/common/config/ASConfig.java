@@ -65,6 +65,7 @@ public class ASConfig {
   public static final ForgeConfigSpec.ConfigValue<List<? extends String>>
       STRENGTH_SKILL_ATTRIBUTE_BONUSES;
   public static final ForgeConfigSpec.ConfigValue<String> TEAR_ACTION;
+  public static final ForgeConfigSpec.DoubleValue TEAR_LVL_SCALE;
   public static final Map<String, AttributeBonus> vitalityAttributeMultipliers =
       new ConcurrentHashMap<>();
   public static final Map<String, AttributeBonus> enduranceAttributeMultipliers =
@@ -116,6 +117,12 @@ public class ASConfig {
         builder
             .comment("If true, disabling player from buying stats for xp.")
             .define("disableLevelBuy", false);
+
+    TEAR_LVL_SCALE =
+            builder
+                    .comment("Scale for returning spent levels from Larvar Tear")
+                    .defineInRange("tearLvlScale", 0.66D, 0D, 1D);
+
     TEAR_ACTION =
         builder
             .comment("Changes \"Larval Tear\" mode")
@@ -129,10 +136,10 @@ public class ASConfig {
     EFFECT_DETRIMENT = builder.define("effectDetriment", true);
 
     builder.comment("Initial cost for upgrading a skill, in levels.");
-    STARTING_COST = builder.defineInRange("startingCost", 5, 0, 10);
+    STARTING_COST = builder.defineInRange("startingCost", 5, 0, Integer.MAX_VALUE);
 
     builder.comment("Increase to cost per level obtained. (use 0 for constant cost).");
-    COST_INCREASE = builder.defineInRange("costIncrease", 1, 0, 10);
+    COST_INCREASE = builder.defineInRange("costIncrease", 1, 0, Integer.MAX_VALUE);
 
     builder.comment("Maximum level each skill can be upgraded to.");
     MAXIMUM_LEVEL = builder.defineInRange("maximumLevel", 31, 2, Integer.MAX_VALUE);

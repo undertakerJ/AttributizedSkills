@@ -7,6 +7,8 @@ import javax.annotation.Nullable;
 import net.lumi_noble.attributizedskills.common.capabilities.SkillModel;
 import net.lumi_noble.attributizedskills.common.config.ASConfig;
 
+import net.lumi_noble.attributizedskills.common.network.packets.SyncToClientPacket;
+import net.lumi_noble.attributizedskills.common.skill.Skill;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,8 +41,7 @@ public class LarvalTearItem extends Item {
 			case RESET: {
 				player.displayClientMessage(Component.translatable("larvar_tear.reset_successful").withStyle(ChatFormatting.GREEN), true);
 				player.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.AMBIENT, 0.5f, 1f);
-				SkillModel model = SkillModel.get(serverPlayer);
-				model.resetSkills(serverPlayer);
+				handleReset(serverPlayer);
 				itemstack.shrink(1);
 				return InteractionResultHolder.consume(itemstack);
 			}
@@ -60,6 +61,28 @@ public class LarvalTearItem extends Item {
 			default:
 				return InteractionResultHolder.pass(itemstack);
 		}
+	}
+
+	public static void handleReset(ServerPlayer player) {
+		SkillModel model = SkillModel.get(player);
+		int totalRefund = 0;
+		int startCost = ASConfig.getStartCost();
+		int costInc  = ASConfig.getCostIncrease();
+
+		double costScale = ASConfig.TEAR_LVL_SCALE.get();
+		for (Skill skill : Skill.values()) {
+			int lvl = model.getSkillLevel(skill);
+			for (int i = 1; i <= lvl; i++) {
+				totalRefund += startCost + (i - 1) * costInc;
+			}
+		}
+
+		if (!player.isCreative()) {
+			player.giveExperienceLevels((int) (totalRefund*costScale));
+		}
+
+		model.resetSkills(player);
+		SyncToClientPacket.send(player);
 	}
 
 	@Override

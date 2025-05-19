@@ -79,41 +79,32 @@ public class SkillScreenV2 extends Screen {
         int y = (this.height - skillHeight) / 2;
 
         int textureOriginOffset = 83;
+        long ticks = Minecraft.getInstance().levelRenderer.getTicks();
 
-        long ticks = Minecraft.getInstance().level.getGameTime();
-
-        int frameHeight = 256;
         int totalFrames = 16;
+        int currentFrame = (int) (ticks / 2 % totalFrames) + 1;
 
-        int currentFrame = (int) (ticks / 2 % totalFrames);
-
-        int textureY = currentFrame * frameHeight;
-
-        int textureWidth = 256;
-        int textureHeight = 256 * 16;
+        ResourceLocation frameTexture = new ResourceLocation(AttributizedSkills.MOD_ID, "textures/gui/skill_screen_v2_" + currentFrame + ".png");
 
         SkillModel model = SkillModel.get();
         String levelText = Component.translatable("gui.total_level").getString() + model.getTotalLevel();
 
+        // Рисуем фон
         poseStack.pushPose();
-        RenderSystem.setShader(GameRenderer::getPositionShader);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShaderTexture(0, SCREEN_TEXTURE);
+        RenderSystem.setShaderTexture(0, frameTexture);
+
         super.renderBackground(guiGraphics);
-        guiGraphics.blit(
-                SCREEN_TEXTURE, x, y, 0, textureY, skillWidth, skillHeight, textureWidth, textureHeight);
-        guiGraphics.drawString(font, levelText, (x + textureOriginOffset + 3) , y + 6, 0x969696);
+        guiGraphics.blit(frameTexture, x, y, 0, 0, skillWidth, skillHeight, skillWidth, skillHeight);
         poseStack.popPose();
-        guiGraphics.drawString(font,
-                Component.translatable("ui.skills.limit", ASConfig.getMaxLevelTotal()).getString(),
-                x, y - 10, 0x313131);
 
-        guiGraphics.drawString(font,
-                Component.translatable("ui.skills.hold_shift").getString(),
-                x, y - 20, 0x313131);
-
+        guiGraphics.drawString(font, levelText, (x + textureOriginOffset + 3), y + 6, 0x969696);
+        guiGraphics.drawString(font, Component.translatable("ui.skills.limit", ASConfig.getMaxLevelTotal()).getString(), x, y - 10, 0x313131);
+        guiGraphics.drawString(font, Component.translatable("ui.skills.hold_shift").getString(), x, y - 20, 0x313131);
         SkillButtonV2.drawOutlinedText(guiGraphics, "Tears: " + model.getTearPoints(), x + 250 - font.width("Tears: " + model.getTearPoints()), y + 6, 0x21F8F6);
     }
+
 
 
     @Override

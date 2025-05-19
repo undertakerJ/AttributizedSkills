@@ -49,35 +49,39 @@ public class RequestLevelUpPacket {
 			Skill skill = Skill.values()[this.skill];
 			int currentLevel = skillModel.getSkillLevel(skill);
 			int maxLevel = ASConfig.getMaxLevel();
-			int totalCost = 0;
-
-			for (int i = 0; i < levels && (currentLevel + i) < maxLevel; i++) {
-				totalCost += ASConfig.getStartCost() + ((currentLevel + i) - 1) * ASConfig.getCostIncrease();
-			}
-
+			int maxTotal  = ASConfig.getMaxLevelTotal();
 			int tearPoints = skillModel.getTearPoints();
 
-			boolean canUseTearPoints = useTearPoints && tearPoints >= levels;
-
-			if (currentLevel < maxLevel && skillModel.underMaxTotal()) {
-				if (canUseTearPoints) {
-					skillModel.setTearPoints(tearPoints - levels);
-				} else if (!player.isCreative()) {
-					player.giveExperienceLevels(-totalCost);
-				}
-
-				for (int i = 0; i < levels && skillModel.getSkillLevel(skill) < maxLevel; i++) {
-					skillModel.setSkillLevel(skill, skillModel.getSkillLevel(skill) + 1, player);
-				}
-
-				updatePlayerAttribute(player, skill, skillModel.getSkillLevel(skill));
-				skillModel.updateTotalLevel();
-				SyncToClientPacket.send(player);
+			int actualLevels = Math.min(levels, maxLevel - currentLevel);
+			if (skillModel.getTotalLevel() + actualLevels > maxTotal) {
+				return;
 			}
+
+			boolean useTP = useTearPoints && tearPoints >= actualLevels;
+			int totalCost = 0;
+			for (int i = 0; i < actualLevels; i++) {
+				totalCost += ASConfig.getStartCost()
+						+ ((currentLevel + i) - 1) * ASConfig.getCostIncrease();
+			}
+
+			if (useTP) {
+				skillModel.setTearPoints(tearPoints - actualLevels);
+			} else if (!player.isCreative() && !ASConfig.DISABLE_LEVEL_BUY.get()) {
+				player.giveExperienceLevels(-totalCost);
+			}
+
+			for (int i = 0; i < actualLevels; i++) {
+				skillModel.setSkillLevel(skill, skillModel.getSkillLevel(skill) + 1, player);
+			}
+
+			updatePlayerAttribute(player, skill, skillModel.getSkillLevel(skill));
+			skillModel.updateTotalLevel();
+			SyncToClientPacket.send(player);
 		});
 
 		context.get().setPacketHandled(true);
 	}
+
 
 	private void updatePlayerAttribute(ServerPlayer player, Skill skill, int level) {
 		Attribute attribute = getAttributeForSkill(skill);
