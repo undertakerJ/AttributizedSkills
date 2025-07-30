@@ -11,8 +11,6 @@ import net.lumi_noble.attributizedskills.common.compat.ApothRarityRequirement;
 import net.lumi_noble.attributizedskills.common.config.ASConfig;
 import net.lumi_noble.attributizedskills.common.skill.Requirement;
 import net.lumi_noble.attributizedskills.common.skill.Skill;
-import net.lumi_noble.attributizedskills.common.util.CalculateAttributeValue;
-import com.google.common.collect.Multimap;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -26,7 +24,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -140,8 +137,16 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 					ResourceLocation rarityId = rarityHolder.getId();
 					ApothRarityRequirement apothReq = ASConfig.APOTH_RARITY_REQUIREMENTS_MAP.get(rarityId);
 					if (apothReq != null) {
-						for (Map.Entry<Skill, Integer> entry : apothReq.getBaseRequirements().entrySet()) {
-							totalRequirements.merge(entry.getKey(), (double) entry.getValue(), Double::sum);
+						for (Map.Entry<Skill, Float> entry : apothReq.getBaseRequirements().entrySet()) {
+							Skill skill = entry.getKey();
+							double multiplier = entry.getValue();
+
+							totalRequirements.merge(skill, 0.0, (oldVal, unused) -> {
+								double increase = oldVal * multiplier;
+								double newVal = oldVal + increase;
+
+								return Math.max(0.0, newVal);
+							});
 						}
 					}
 				}
@@ -210,8 +215,17 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 						ResourceLocation rarityId = rarity.getId();
 						ApothRarityRequirement apothReq = ASConfig.APOTH_RARITY_REQUIREMENTS_MAP.get(rarityId);
 						if (apothReq != null) {
-							for (Map.Entry<Skill, Integer> entry : apothReq.getBaseRequirements().entrySet()) {
-								totalRequirements.merge(entry.getKey(), entry.getValue(), Integer::sum);
+
+							for (Map.Entry<Skill, Float> entry : apothReq.getBaseRequirements().entrySet()) {
+								Skill skill = entry.getKey();
+								float multiplier = entry.getValue();
+
+								totalRequirements.merge(skill, 0, (oldVal, unused) -> {
+									float increase = oldVal * multiplier;
+									int newVal = (int) (oldVal + increase);
+
+									return Math.max(0, newVal);
+								});
 							}
 						}
 					}
@@ -268,27 +282,6 @@ public class SkillModel implements INBTSerializable<CompoundTag> {
 		return Minecraft.getInstance().player.getCapability(SkillCapability.SKILL_MODEL)
 				.orElseThrow(() -> new IllegalArgumentException("Player does not have a Skill Model"));
 	}
-
-	public void copyForRespawns(SkillModel oldSkill, ServerPlayer oldPlayer) {
-		this.deserializeNBT(oldSkill.serializeNBT()); // Копируем все данные
-
-		for (Skill skill : Skill.values()) {
-			UUID modifierUUID = getModifierUUIDForSkill(skill);
-			Attribute attribute = getAttributeForSkill(skill);
-
-			if (attribute != null) {
-				AttributeInstance instance = oldPlayer.getAttribute(attribute);
-
-				if (instance == null || instance.getModifier(modifierUUID) == null) {
-					this.setSkillLevel(skill, 1, null);
-
-				}
-			}
-		}
-
-		this.updateTotalLevel(); // Пересчитываем общий уровень
-	}
-
 
 	public void copyForRespawn(SkillModel oldStore) {
 		this.deserializeNBT(oldStore.serializeNBT());

@@ -626,13 +626,13 @@ public class ASConfig {
       if (tokens.length < 2) continue;
 
       ResourceLocation rarityId = new ResourceLocation(tokens[0]);
-      Map<Skill, Integer> reqs = new HashMap<>();
+      Map<Skill, Float> reqs = new HashMap<>();
 
       for (int i = 1; i < tokens.length; i++) {
         String[] parts = tokens[i].split(":");
         if (parts.length != 2) continue;
         String key = parts[0].toLowerCase();
-        int value = Integer.parseInt(parts[1]);
+        float value = Float.parseFloat(parts[1]);
         try {
           Skill skill = Skill.valueOf(key.toUpperCase());
           reqs.put(skill, value);

@@ -32,21 +32,26 @@ public class AttributesEventHandler {
 
   public static void updateSkillsFromAttributes(ServerPlayer player) {
     SkillModel model = SkillModel.get(player);
-    for (Map.Entry<RegistryObject<Attribute>, Skill> entry :
-        ModAttributes.ATTRIBUTE_BY_SKILL.entrySet()) {
+    for (Map.Entry<RegistryObject<Attribute>, Skill> entry : ModAttributes.ATTRIBUTE_BY_SKILL.entrySet()) {
       Attribute attribute = entry.getKey().get();
       Skill skill = entry.getValue();
       AttributeInstance instance = player.getAttribute(attribute);
       if (instance != null) {
-        int newSkillLevel = (int) Math.floor(instance.getValue());
-        if (model.getSkillLevel(skill) != newSkillLevel) {
-          model.setSkillLevel(skill, newSkillLevel, player);
+        UUID uuid = ModAttributes.getModifierUUIDForSkill(skill);
+        AttributeModifier mod = instance.getModifier(uuid);
+
+        double ourBonus = mod != null ? mod.getAmount() : 0.0;
+        int level = (int) Math.round(ourBonus + 1);
+
+        if (model.getSkillLevel(skill) != level) {
+          model.setSkillLevel(skill, level, player);
         }
       }
     }
     model.updateTotalLevel();
     SyncToClientPacket.send(player);
   }
+
 
   @SubscribeEvent
   public static void onPlayerClone(PlayerEvent.Clone event) {
@@ -107,9 +112,7 @@ public class AttributesEventHandler {
       AttributeInstance instance = player.getAttribute(attribute);
       if (instance != null) {
         UUID modifierUUID = ModAttributes.getModifierUUIDForSkill(skill);
-        // Удаляем старый модификатор
         instance.removeModifier(modifierUUID);
-        // Вычисляем бонус как (level - 1)
         double bonus = level - 1;
         AttributeModifier modifier =
             new AttributeModifier(

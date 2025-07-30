@@ -61,8 +61,17 @@ public class Tooltip {
           ResourceLocation rarityId = rarityHolder.getId();
           ApothRarityRequirement apothReq = ASConfig.APOTH_RARITY_REQUIREMENTS_MAP.get(rarityId);
           if (apothReq != null) {
-            for (Map.Entry<Skill, Integer> entry : apothReq.getBaseRequirements().entrySet()) {
-              totalRequirements.merge(entry.getKey(), (double) entry.getValue(), Double::sum);
+            for (Map.Entry<Skill, Float> entry : apothReq.getBaseRequirements().entrySet()) {
+              Skill skill = entry.getKey();
+              double multiplier = entry.getValue();
+
+              totalRequirements.merge(skill, 0.0, (oldVal, unused) -> {
+                double increase = oldVal * multiplier;
+                double newVal = oldVal + increase;
+                return Math.max(0.0, newVal);
+              });
+
+
             }
           }
         }
@@ -84,6 +93,8 @@ public class Tooltip {
         }
       }
     }
+
+    totalRequirements.entrySet().removeIf(e -> e.getValue() < 1.0);
 
     if (!totalRequirements.isEmpty()) {
       tooltips.add(Component.translatable("tooltip.item.requirements").withStyle(ChatFormatting.YELLOW));

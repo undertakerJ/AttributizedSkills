@@ -96,7 +96,8 @@ public class RequestLevelUpPacket {
 			instance.removeModifier(uuid);
 		}
 
-		double bonus = level - 1;
+		double perLevelBonus = 1.0;
+		double bonus = perLevelBonus * (level - 1);
 
 		AttributeModifier modifier = new AttributeModifier(uuid, skill.displayName, bonus, AttributeModifier.Operation.ADDITION);
 

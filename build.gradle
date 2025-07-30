@@ -12,7 +12,7 @@ buildscript {
         maven { url = 'https://maven.parchmentmc.org' }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '[6.0,6.2)', changing: true
         classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7.+'
         classpath 'org.parchmentmc:librarian:1.+'
     }
@@ -37,7 +37,6 @@ println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty '
 
 minecraft {
     mappings channel: 'parchment', version: '2023.09.03-1.20.1'
-
     runs {
         client {
             workingDirectory project.file('run')
@@ -90,15 +89,7 @@ minecraft {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    // Put repositories for dependencies here
-    // ForgeGradle automatically adds the Forge maven and Maven Central for you
 
-    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so:
-    // flatDir {
-    //     dir 'libs'
-    // }
-
-    // feathers
     maven { url "https://www.cursemaven.com" }
 
     // ars nouveau
@@ -145,6 +136,7 @@ dependencies {
 
     implementation fg.deobf("curse.maven:epic-fight-mod-405076:6534845")
     implementation fg.deobf("curse.maven:dungeons-and-combat-1128235:6377690")
+    implementation fg.deobf("curse.maven:attributizer-838573:5313631")
 
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 }

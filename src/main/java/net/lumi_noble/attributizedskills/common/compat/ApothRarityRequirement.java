@@ -5,13 +5,13 @@ import net.lumi_noble.attributizedskills.common.skill.Skill;
 import java.util.Map;
 
 public class ApothRarityRequirement {
-    private final Map<Skill, Integer> baseRequirements;
+    private final Map<Skill, Float> baseRequirements;
 
-    public ApothRarityRequirement(Map<Skill, Integer> baseRequirements) {
+    public ApothRarityRequirement(Map<Skill, Float> baseRequirements) {
         this.baseRequirements = baseRequirements;
     }
 
-    public Map<Skill, Integer> getBaseRequirements() {
+    public Map<Skill, Float> getBaseRequirements() {
         return baseRequirements;
     }
 
